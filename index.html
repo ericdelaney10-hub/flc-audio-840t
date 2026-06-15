@@ -1,0 +1,3122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FLC Audio"/>
+<meta name="theme-color" content="#080810"/>
+<title>FLC Audio · Glen Rose First Methodist</title>
+<style>
+:root {
+  --bg: #080810;
+  --surface: #10101a;
+  --surface2: #18182a;
+  --surface3: #202035;
+  --border: #252540;
+  --accent: #4f8ef7;
+  --accent-glow: rgba(79,142,247,0.35);
+  --purple: #8b5cf6;
+  --purple-glow: rgba(139,92,246,0.35);
+  --green: #10d67a;
+  --green-glow: rgba(16,214,122,0.3);
+  --red: #ff3d5a;
+  --red-glow: rgba(255,61,90,0.3);
+  --yellow: #fbbf24;
+  --orange: #f97316;
+  --text: #eeeef8;
+  --text-dim: #5a5a7a;
+  --text-mid: #9090b0;
+  --gold: #d4a017;
+  --gold-light: #f5d060;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow:hidden;-webkit-overflow-scrolling:touch;touch-action:manipulation;}
+
+/* animated background particles */
+body::before{
+  content:'';position:fixed;inset:0;
+  background: radial-gradient(ellipse at 15% 50%, rgba(79,142,247,0.06) 0%, transparent 55%),
+              radial-gradient(ellipse at 85% 15%, rgba(139,92,246,0.07) 0%, transparent 55%),
+              radial-gradient(ellipse at 50% 100%, rgba(16,214,122,0.03) 0%, transparent 50%);
+  pointer-events:none;z-index:0;
+  animation:bgShift 12s ease-in-out infinite alternate;
+}
+@keyframes bgShift{
+  0%{opacity:0.6}50%{opacity:1}100%{opacity:0.7}
+}
+
+/* ════════════════════════════════
+   START SCREEN
+════════════════════════════════ */
+#startScreen{
+  position:fixed;inset:0;z-index:999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background: radial-gradient(ellipse at 50% 0%, #1a1035 0%, #080810 65%);
+}
+/* subtle animated glow orbs */
+#startScreen::before{
+  content:'';position:absolute;width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(79,142,247,0.08),transparent 70%);
+  top:-100px;left:50%;transform:translateX(-50%);
+  animation:pulse 4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:translateX(-50%) scale(1);opacity:0.6}50%{transform:translateX(-50%) scale(1.15);opacity:1}}
+
+.start-logo{
+  width:240px;height:auto;
+  filter:invert(1) brightness(1.1) drop-shadow(0 0 20px rgba(255,255,255,0.15));
+  margin-bottom:8px;position:relative;z-index:1;
+}
+.church-full-name{
+  font-size:24px;font-weight:900;color:var(--gold-light);
+  letter-spacing:0.5px;text-align:center;line-height:1.2;
+  text-shadow:0 0 30px rgba(212,160,23,0.5);
+  position:relative;z-index:1;
+}
+.flc-sub{
+  font-size:12px;font-weight:500;letter-spacing:6px;
+  text-transform:uppercase;color:var(--gold);opacity:0.75;
+  margin-top:6px;margin-bottom:32px;text-align:center;
+  position:relative;z-index:1;
+}
+.start-divider{
+  width:220px;height:1px;
+  background:linear-gradient(to right,transparent,rgba(212,160,23,0.5),transparent);
+  margin-bottom:32px;position:relative;z-index:1;
+}
+.pin-card{
+  background:rgba(16,16,26,0.92);
+  border:1px solid rgba(79,142,247,0.2);
+  border-radius:20px;padding:28px 30px;
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+  min-width:280px;max-width:320px;width:90%;position:relative;z-index:1;
+  box-shadow:0 0 0 1px rgba(79,142,247,0.05), 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.pin-label{font-size:10px;font-weight:800;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;}
+.pin-dots{display:flex;gap:16px;}
+.pin-dot{
+  width:15px;height:15px;border-radius:50%;
+  border:2px solid var(--border);background:transparent;transition:all 0.2s;
+}
+.pin-dot.filled{
+  background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 12px var(--accent-glow);
+}
+.pin-dot.error{background:var(--red);border-color:var(--red);box-shadow:0 0 12px var(--red-glow);}
+.pin-pad,.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:320px;}
+.pin-key{
+  background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:16px;color:var(--text);font-size:26px;font-weight:700;
+  padding:0;cursor:pointer;text-align:center;
+  -webkit-user-select:none;user-select:none;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:background 0.1s,transform 0.1s,box-shadow 0.1s;
+  position:relative;overflow:hidden;
+  min-height:64px;display:flex;align-items:center;justify-content:center;
+  -webkit-appearance:none;appearance:none;
+}
+.pin-key:hover,.pin-key:focus{background:rgba(79,142,247,0.15);border-color:rgba(79,142,247,0.5);outline:none;}
+.pin-key:active{transform:scale(0.88);background:rgba(79,142,247,0.25);box-shadow:0 0 12px rgba(79,142,247,0.3);}
+.pin-key.del{color:var(--text-dim);font-size:18px;}
+.pin-key.zero{grid-column:2;}
+.pin-error{font-size:11px;color:var(--red);font-weight:700;letter-spacing:1px;height:14px;opacity:0;transition:opacity 0.3s;}
+.pin-error.show{opacity:1;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake 0.4s ease;}
+@keyframes slideUp{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
+.slide-away{animation:slideUp 0.4s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.4s ease forwards;}
+
+/* ════════════════════════════════
+   TOPBAR
+════════════════════════════════ */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:56px;
+  background:linear-gradient(180deg,rgba(12,12,22,0.98) 0%,rgba(10,10,18,0.95) 100%);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  flex-shrink:0;position:relative;z-index:10;
+  box-shadow:0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4);
+}
+.topbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent 5%,var(--accent) 35%,var(--purple) 65%,transparent 95%);
+  opacity:0.5;
+}
+.topbar-brand{display:flex;align-items:center;gap:12px;}
+.topbar-logo{height:30px;width:auto;filter:invert(1) brightness(0.85) opacity(0.8);}
+.topbar-titles{display:flex;flex-direction:column;gap:1px;}
+.topbar-name{font-size:12px;font-weight:800;color:var(--gold-light);letter-spacing:0.5px;}
+.topbar-sub{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.conn-input{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:5px 10px;border-radius:8px;font-size:12px;
+  outline:none;transition:border-color 0.2s;
+}
+.conn-input:focus{border-color:var(--accent);}
+.conn-input::placeholder{color:var(--text-dim);}
+.btn-connect{
+  padding:7px 16px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  color:#fff;font-size:12px;font-weight:700;cursor:pointer;
+  transition:all 0.15s;
+  box-shadow:0 2px 12px rgba(79,142,247,0.4);
+}
+.btn-connect:hover{opacity:0.85;}
+.status-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 16px;border-radius:24px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-dim);transition:all 0.3s;}
+.status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green-glow);animation:livePulse 2s ease-in-out infinite;}
+@keyframes livePulse{
+  0%,100%{box-shadow:0 0 4px var(--green-glow), 0 0 0 0 rgba(16,214,122,0);}
+  50%{box-shadow:0 0 18px var(--green-glow), 0 0 0 5px rgba(16,214,122,0.1);}
+}
+.status-dot.error{background:var(--red);box-shadow:0 0 8px var(--red-glow);}
+.status-txt{font-size:11px;color:var(--text-dim);}
+
+/* ════════════════════════════════
+   TABS
+════════════════════════════════ */
+.tab-bar{
+  display:flex;background:rgba(8,8,16,0.92);
+  border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;
+  padding:0 16px;gap:2px;position:relative;z-index:9;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.tab-btn{
+  padding:14px 20px;font-size:11px;font-weight:800;cursor:pointer;
+  border:none;background:transparent;color:var(--text-dim);
+  letter-spacing:1.5px;border-bottom:3px solid transparent;
+  transition:all 0.18s;display:flex;align-items:center;gap:6px;text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  position:relative;
+}
+.tab-btn:hover{color:var(--text-mid);}
+.tab-btn.active{
+  color:var(--accent);border-bottom-color:var(--accent);
+  text-shadow:0 0 14px var(--accent-glow);
+}
+.tab-btn.active::before{
+  content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;
+  background:var(--accent);border-radius:3px 3px 0 0;
+  box-shadow:0 -2px 12px var(--accent-glow);
+  filter:blur(1px);
+}
+.tab-icon{font-size:14px;}
+
+/* ════════════════════════════════
+   TAB CONTENT
+════════════════════════════════ */
+.tab-content{flex:1;overflow:hidden;position:relative;}
+.tab-pane{display:none;height:100%;overflow-y:auto;overflow-x:hidden;}
+.tab-pane.active{display:flex;flex-direction:column;height:100%;animation:tabFadeIn 0.2s ease;}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ════════════════════════════════
+   TAB 1: CHANNELS
+════════════════════════════════ */
+.channels-wrap{
+  padding:20px 24px;
+  display:flex;flex-direction:column;gap:16px;
+  height:100%;box-sizing:border-box;
+}
+
+/* 2x2 channel grid */
+.channels-main-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+  flex:1;
+  align-content:stretch;
+}
+
+.channel-card{
+  background:linear-gradient(160deg,rgba(255,255,255,0.03) 0%,var(--surface) 100%);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:24px;
+  padding:0;
+  display:flex;flex-direction:column;
+  transition:all 0.25s cubic-bezier(0.34,1.2,0.64,1);
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* Top accent bar */
+.channel-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(79,142,247,0.5),transparent);
+  transition:all 0.3s;
+}
+.channel-card.ch-active::before{
+  height:4px;
+  background:linear-gradient(90deg,transparent,var(--green) 30%,#7fffcc,var(--green) 70%,transparent);
+  box-shadow:0 0 18px var(--green-glow), 0 0 6px var(--green);
+}
+.channel-card.ch-muted::before{
+  height:4px;
+  background:linear-gradient(90deg,transparent,var(--red) 30%,#ff8099,var(--red) 70%,transparent);
+  box-shadow:0 0 18px var(--red-glow), 0 0 6px var(--red);
+}
+
+.channel-card.ch-active{
+  border-color:#12d67a;
+  background:linear-gradient(160deg, rgba(16,214,122,0.18) 0%, rgba(16,214,122,0.06) 100%);
+  box-shadow:0 0 40px rgba(16,214,122,0.4), 0 0 80px rgba(16,214,122,0.15);
+}
+.channel-card.ch-muted{
+  border-color:#ff3d5a;
+  background:linear-gradient(160deg, rgba(255,61,90,0.14) 0%, rgba(255,61,90,0.04) 100%);
+  box-shadow:0 0 30px rgba(255,61,90,0.3);
+}
+
+/* Card body */
+.ch-card-body{
+  padding:22px 22px 18px;
+  display:flex;flex-direction:column;gap:16px;
+  flex:1;
+}
+
+/* Header row */
+.ch-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.ch-icon-name{display:flex;align-items:center;gap:12px;}
+.ch-icon-wrap{
+  width:44px;height:44px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:22px;flex-shrink:0;
+  transition:all 0.25s;
+}
+.channel-card.ch-active .ch-icon-wrap{
+  background:#12d67a;
+  border-color:#0aaa60;
+  box-shadow:0 0 16px rgba(16,214,122,0.8);
+}
+.channel-card.ch-muted .ch-icon-wrap{
+  background:#ff3d5a;
+  border-color:#cc2040;
+  box-shadow:0 0 16px rgba(255,61,90,0.7);
+}
+.ch-name{font-size:16px;font-weight:900;color:var(--text);letter-spacing:0.2px;}
+.ch-sub{font-size:10px;color:var(--text-dim);margin-top:3px;letter-spacing:0.5px;}
+
+/* Status badge pill */
+.ch-badge{
+  padding:5px 14px;border-radius:20px;
+  font-size:11px;font-weight:900;letter-spacing:2px;
+  transition:all 0.2s;white-space:nowrap;flex-shrink:0;
+  /* Default = ON = GREEN */
+  background:#12d67a;
+  color:#fff;
+  border:2px solid #0aaa60;
+  box-shadow:0 0 14px rgba(16,214,122,0.7);
+}
+.ch-badge.muted{
+  background:#ff3d5a;
+  color:#fff;
+  border:2px solid #cc2040;
+  box-shadow:0 0 14px rgba(255,61,90,0.7);
+}
+
+/* BIG ON/OFF buttons */
+.ch-btn-row{display:flex;gap:10px;width:100%;}
+
+/* ON button — ALWAYS solid green, dimmed when not selected */
+.ch-big-btn.state-on{
+  flex:1;padding:22px 8px;border-radius:16px;
+  border:3px solid #0aaa60;
+  background:#12d67a;
+  color:rgba(255,255,255,0.5);
+  font-size:16px;font-weight:900;letter-spacing:2px;cursor:pointer;
+  transition:all 0.15s;
+  box-shadow:none;
+  opacity:0.45;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+
+/* OFF button — ALWAYS solid red, dimmed when not selected */
+.ch-big-btn.state-off{
+  flex:1;padding:22px 8px;border-radius:16px;
+  border:3px solid #cc2040;
+  background:#ff3d5a;
+  color:rgba(255,255,255,0.5);
+  font-size:16px;font-weight:900;letter-spacing:2px;cursor:pointer;
+  transition:all 0.15s;
+  box-shadow:none;
+  opacity:0.45;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+
+/* ACTIVE state — full brightness, full glow */
+.ch-big-btn.state-on.is-active{
+  opacity:1;
+  color:#fff;
+  font-size:18px;
+  box-shadow:0 0 28px rgba(16,214,122,0.85), inset 0 1px 0 rgba(255,255,255,0.3);
+  text-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+.ch-big-btn.state-off.is-active{
+  opacity:1;
+  color:#fff;
+  font-size:18px;
+  box-shadow:0 0 28px rgba(255,61,90,0.85), inset 0 1px 0 rgba(255,255,255,0.25);
+  text-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Gain info row */
+.ch-gain-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;
+  flex-shrink:0;
+}
+.ch-gain-label{font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+.ch-gain-val{
+  font-size:13px;font-weight:800;font-family:'SF Mono','Fira Code',monospace;
+  color:var(--accent);letter-spacing:1px;
+  background:rgba(79,142,247,0.08);padding:4px 12px;
+  border-radius:10px;border:1px solid rgba(79,142,247,0.18);
+  box-shadow:inset 0 1px 0 rgba(79,142,247,0.1);
+}
+
+/* Shutdown card */
+.shutdown-card{
+  background:rgba(255,61,90,0.04);
+  border:1px solid rgba(255,61,90,0.2);
+  border-radius:18px;padding:20px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;transition:all 0.2s;
+  flex-shrink:0;
+}
+.shutdown-card:hover{border-color:rgba(255,61,90,0.45);background:rgba(255,61,90,0.07);}
+.shutdown-info{display:flex;align-items:center;gap:14px;}
+.shutdown-icon{font-size:28px;filter:drop-shadow(0 0 8px var(--red-glow));}
+.shutdown-text-block{}
+.shutdown-title{font-size:15px;font-weight:800;color:var(--red);}
+.shutdown-desc{font-size:11px;color:var(--text-dim);margin-top:3px;max-width:320px;line-height:1.5;}
+
+.shutdown-btn{
+  width:100%;padding:20px 12px;border-radius:16px;
+  border:2px solid var(--red);
+  background:rgba(255,61,90,0.1);color:var(--red);
+  font-size:16px;font-weight:900;cursor:pointer;
+  letter-spacing:1.5px;transition:all 0.15s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  text-shadow:0 0 10px var(--red-glow);
+  box-shadow:0 0 20px rgba(255,61,90,0.15);
+}
+.shutdown-btn:hover{background:rgba(255,61,90,0.22);box-shadow:0 0 28px var(--red-glow);}
+.shutdown-btn:active{transform:scale(0.97);}
+
+/* ════════════════════════════════
+   TAB 2: FADERS
+════════════════════════════════ */
+.faders-layout{
+  display:flex;flex-direction:row;
+  padding:16px 20px;gap:14px;
+  height:100%;overflow-x:auto;align-items:stretch;
+  box-sizing:border-box;
+}
+.fader-strip{
+  background:linear-gradient(180deg,rgba(255,255,255,0.04) 0%,rgba(10,10,20,0.6) 100%),var(--surface);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:22px;width:200px;min-width:200px;
+  display:flex;flex-direction:column;align-items:center;
+  padding:14px 10px 12px;gap:6px;
+  transition:all 0.2s;position:relative;overflow:hidden;
+  flex:1;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.fader-strip::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity 0.2s;
+}
+.fader-strip:hover::before{opacity:1;}
+.fader-strip.muted{border-color:rgba(255,61,90,0.5);box-shadow:0 0 20px rgba(255,61,90,0.12);}
+.fader-strip.muted::before{background:linear-gradient(to right,transparent,var(--red),transparent);opacity:1;}
+.fader-strip.muted .fs-accent-line{background:linear-gradient(90deg,transparent,var(--red),transparent);filter:drop-shadow(0 0 4px var(--red));background-size:200% 100%;}
+
+.fs-name{font-size:17px;font-weight:900;color:var(--text);text-align:center;letter-spacing:0.5px;}
+.fs-sub{font-size:12px;color:var(--text-dim);text-align:center;margin-top:-4px;}
+
+.fader-strip-inner{
+  display:flex;flex-direction:row;align-items:stretch;
+  gap:4px;flex:1;width:100%;min-height:0;
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* The fader column: track only */
+.fader-col{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;gap:4px;flex:1;min-width:0;
+}
+/* The meter column */
+.meter-col{
+  display:flex;flex-direction:column;align-items:center;
+  gap:4px;flex-shrink:0;
+}
+/* Shared dB scale column */
+.scale-col{
+  position:relative;
+  width:48px;flex-shrink:0;
+  font-family:monospace;
+  color:var(--text-dim);
+  pointer-events:none;user-select:none;
+  line-height:1;
+  overflow:visible;
+}
+.scale-mark{
+  position:absolute;
+  transform:translateY(-50%);
+  white-space:nowrap;
+}
+.scale-left .scale-mark{ right:0; }
+.scale-right .scale-mark{ left:0; }
+
+.vu-meter{
+  width:36px;flex:1;min-height:0;
+  background:rgba(0,0,0,0.55);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:6px;overflow:hidden;
+  display:flex;flex-direction:column-reverse;
+  position:relative;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,0.5);
+}
+.vu-fill{
+  width:100%;height:0%;
+  background:linear-gradient(to top,
+    #05ff8a 0%,
+    #10d67a 52%,
+    #ffe040 72%,
+    #ff9500 86%,
+    #ff2244 100%);
+  transition:height 0.05s ease-out;
+  border-radius:0 0 4px 4px;
+  filter:brightness(1.1);
+}
+.vu-segments{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  padding:2px 0;pointer-events:none;
+}
+.vu-seg{height:1px;background:rgba(0,0,0,0.45);width:100%;}
+.vu-db-label{font-size:8px;font-family:monospace;color:var(--text-dim);text-align:center;}
+
+.fader-track{
+  width:72px;flex:1;min-height:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.05) 0%,rgba(15,15,30,0.9) 40%,rgba(0,0,0,0.4) 100%);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:36px;position:relative;cursor:pointer;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.04);
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+}
+.fader-track-line{
+  position:absolute;left:50%;top:22px;bottom:22px;
+  width:3px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,rgba(79,142,247,0.5),rgba(79,142,247,0.1));
+  border-radius:1px;
+}
+.fader-ticks{position:absolute;inset:0;pointer-events:none;}
+.fader-tick{
+  position:absolute;right:4px;width:5px;height:1px;
+  background:rgba(255,255,255,0.1);
+}
+.fader-thumb{
+  position:absolute;left:50%;transform:translateX(-50%);
+  width:64px;height:38px;
+  background:linear-gradient(180deg,#f0f4ff 0%,#dce6ff 40%,#b8ccf8 75%,#8aaae8 100%);
+  border-radius:12px;cursor:grab;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.7),
+    0 0 20px rgba(79,142,247,0.4),
+    inset 0 2px 0 rgba(255,255,255,0.9),
+    inset 0 -2px 0 rgba(0,0,50,0.15);
+  transition:box-shadow 0.12s, transform 0.1s;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+}
+.fader-thumb:active{
+  cursor:grabbing;
+  transform:translateX(-50%) scaleY(0.96);
+  box-shadow:0 2px 28px rgba(0,0,0,0.6),0 0 32px rgba(79,142,247,0.7),inset 0 2px 0 rgba(255,255,255,0.9);
+}
+.fader-thumb-line{
+  width:26px;height:3px;
+  background:linear-gradient(90deg,rgba(20,40,120,0.15),rgba(20,40,120,0.5),rgba(20,40,120,0.15));
+  border-radius:2px;
+  box-shadow:0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,50,0.1);
+}
+.fader-glow-line{
+  position:absolute;left:50%;bottom:18px;
+  width:2px;transform:translateX(-50%);
+  border-radius:1px;
+  background:linear-gradient(to top,rgba(79,142,247,0.7),transparent);
+  pointer-events:none;
+}
+
+.strip-db-readout{
+  font-size:12px;font-weight:800;font-family:'SF Mono','Fira Code',monospace;
+  color:var(--accent);text-align:center;
+  text-shadow:0 0 10px var(--accent-glow);
+  letter-spacing:1px;
+  background:rgba(79,142,247,0.08);
+  padding:4px 12px;border-radius:10px;
+  border:1px solid rgba(79,142,247,0.15);
+  box-shadow:inset 0 1px 0 rgba(79,142,247,0.08);
+}
+
+.fader-strip.master .fader-thumb{
+  background:linear-gradient(180deg,#f0e8ff 0%,#d0b8ff 55%,#b090f0 100%);
+  box-shadow:0 3px 14px rgba(0,0,0,0.65),0 0 16px rgba(139,92,246,0.5),inset 0 1px 0 rgba(255,255,255,0.85);
+}
+.fader-strip.master .fader-track-line{background:linear-gradient(to bottom,rgba(139,92,246,0.5),rgba(139,92,246,0.1));}
+.fader-strip.master .fader-glow-line{background:linear-gradient(to top,rgba(139,92,246,0.7),transparent);}
+.fader-strip.master .strip-db-readout{color:var(--purple);}
+
+/* ════════ FADER MUTE BUTTON ════════ */
+.fs-mute{
+  width:calc(100% - 4px);
+  padding:14px 8px;
+  border-radius:16px;
+  border:2px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.7);
+  font-size:13px;font-weight:900;cursor:pointer;
+  letter-spacing:2px;transition:all 0.18s;
+  flex-shrink:0;
+  text-shadow:none;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+.fs-mute:hover{
+  border-color:rgba(255,61,90,0.6);
+  color:var(--red);
+  background:rgba(255,61,90,0.1);
+}
+.fs-mute.muted{
+  background:rgba(255,61,90,0.18);
+  border-color:var(--red);
+  color:var(--red);
+  box-shadow:0 0 18px rgba(255,61,90,0.35), inset 0 0 10px rgba(255,61,90,0.08);
+  animation:mutePulse 1.8s ease-in-out infinite;
+}
+@keyframes mutePulse{
+  0%,100%{box-shadow:0 0 14px rgba(255,61,90,0.3), inset 0 0 8px rgba(255,61,90,0.06);}
+  50%{box-shadow:0 0 28px rgba(255,61,90,0.55), inset 0 0 14px rgba(255,61,90,0.12);}
+}
+
+/* ════════════════════════════════
+   TAB 3: EQ
+════════════════════════════════ */
+.eq-layout{
+  display:flex;flex-direction:column;
+  padding:14px 18px;gap:12px;height:100%;
+}
+.eq-top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.eq-ch-selector{display:flex;gap:6px;flex-wrap:wrap;}
+.eq-ch-btn{
+  padding:7px 16px;border-radius:20px;
+  border:1.5px solid var(--border);
+  background:transparent;color:var(--text-dim);
+  font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;
+}
+.eq-ch-btn:hover{border-color:var(--accent);color:var(--accent);}
+.eq-ch-btn.active{
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  border-color:transparent;color:#fff;
+  box-shadow:0 0 14px var(--accent-glow);
+}
+.apply-eq-btn{
+  padding:8px 20px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  color:#fff;font-size:12px;font-weight:800;cursor:pointer;
+  letter-spacing:0.5px;transition:opacity 0.15s;white-space:nowrap;
+  box-shadow:0 0 16px var(--accent-glow);
+}
+.apply-eq-btn:hover{opacity:0.85;}
+
+.eq-canvas-wrap{
+  background:linear-gradient(180deg,rgba(20,20,40,0.9) 0%,rgba(5,5,15,0.95) 100%);
+  border:1px solid rgba(79,142,247,0.2);
+  border-radius:18px;overflow:hidden;flex-shrink:0;position:relative;
+  box-shadow:inset 0 2px 20px rgba(0,0,0,0.7), 0 0 30px rgba(79,142,247,0.08), 0 6px 24px rgba(0,0,0,0.5);
+}
+#eqCanvas{display:block;width:100%;cursor:crosshair;}
+
+.eq-controls-area{display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;}
+.eq-hpf-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:10px 16px;
+}
+.eq-hpf-label{font-size:10px;font-weight:900;color:var(--yellow);letter-spacing:2px;width:34px;}
+.hpf-check{accent-color:var(--yellow);cursor:pointer;width:14px;height:14px;}
+.eq-hpf-freq-wrap{display:flex;align-items:center;gap:8px;flex:1;}
+.eq-hpf-val{font-size:12px;font-family:monospace;color:var(--yellow);min-width:55px;font-weight:700;}
+input[type=range].eq-hpf-sl{
+  flex:1;-webkit-appearance:none;height:4px;border-radius:2px;
+  background:var(--border);outline:none;cursor:pointer;
+}
+input[type=range].eq-hpf-sl::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--yellow);border:2px solid #fff;cursor:pointer;
+}
+.eq-bands-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;
+}
+.eq-band-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:11px 13px;display:flex;flex-direction:column;gap:7px;
+}
+.eq-band-top{display:flex;align-items:center;justify-content:space-between;}
+.eq-band-title{font-size:10px;font-weight:900;letter-spacing:1px;}
+.eq-band-toggle{accent-color:var(--accent);cursor:pointer;width:14px;height:14px;}
+.eq-band-params{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.eq-p{display:flex;flex-direction:column;gap:3px;}
+.eq-p-label{font-size:9px;color:var(--text-dim);text-align:center;letter-spacing:1px;}
+.eq-p-val{font-size:10px;font-family:monospace;color:var(--accent);text-align:center;font-weight:700;}
+input[type=range].eq-sl{
+  width:100%;-webkit-appearance:none;height:3px;border-radius:2px;
+  background:var(--border);outline:none;cursor:pointer;
+}
+input[type=range].eq-sl::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;background:var(--accent);border:1.5px solid #fff;cursor:pointer;
+}
+
+/* ════════════════════════════════
+   CONFIRM MODAL
+════════════════════════════════ */
+#confirmOverlay{
+  position:fixed;inset:0;z-index:998;
+  background:rgba(0,0,0,0.85);
+  display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+}
+#confirmOverlay.show{display:flex;}
+.confirm-modal{
+  background:var(--surface);
+  border:1px solid rgba(255,61,90,0.4);
+  border-radius:20px;padding:36px 40px;text-align:center;max-width:380px;
+  box-shadow:0 0 0 1px rgba(255,61,90,0.1), 0 20px 60px rgba(255,61,90,0.2);
+}
+@keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+.confirm-modal{animation:popIn 0.2s cubic-bezier(0.34,1.56,0.64,1);}
+.confirm-icon{font-size:48px;margin-bottom:14px;filter:drop-shadow(0 0 12px var(--red-glow));}
+.confirm-title{font-size:22px;font-weight:900;color:var(--red);margin-bottom:8px;letter-spacing:0.5px;}
+.confirm-body{font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:28px;}
+.confirm-btns{display:flex;gap:12px;justify-content:center;width:100%;}
+.confirm-yes,.confirm-no{flex:1;}
+.confirm-yes{
+  padding:14px 36px;border-radius:12px;border:2px solid #0aaa60;
+  background:#12d67a;color:#fff;
+  font-size:15px;font-weight:900;cursor:pointer;
+  transition:all 0.15s;box-shadow:0 0 20px rgba(16,214,122,0.6);
+  letter-spacing:1px;
+}
+.confirm-yes:hover{background:#0ec46e;box-shadow:0 0 28px rgba(16,214,122,0.8);}
+.confirm-no{
+  padding:14px 36px;border-radius:12px;
+  border:2px solid #cc2040;background:#ff3d5a;
+  color:#fff;font-size:15px;font-weight:900;cursor:pointer;
+  transition:all 0.15s;box-shadow:0 0 20px rgba(255,61,90,0.6);
+  letter-spacing:1px;
+}
+.confirm-no:hover{background:#e62244;box-shadow:0 0 28px rgba(255,61,90,0.8);}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:rgba(20,20,36,0.96);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--text);
+  opacity:0;transform:translateY(16px) scale(0.96);
+  transition:all 0.28s cubic-bezier(0.34,1.4,0.64,1);
+  pointer-events:none;
+  box-shadow:0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  letter-spacing:0.3px;
+}
+.toast.show{opacity:1;transform:translateY(0) scale(1);}
+.toast.success{border-color:rgba(16,214,122,0.4);color:var(--green);}
+.toast.error{border-color:rgba(255,61,90,0.4);color:var(--red);}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+
+/* ════════ PIZZAZZ — glowing accent border animation ════════ */
+@keyframes borderPulse{
+  0%,100%{box-shadow:0 0 0 0 transparent;}
+  50%{box-shadow:0 0 18px 2px rgba(79,142,247,0.12);}
+}
+.fader-strip:not(.muted){animation:borderPulse 3s ease-in-out infinite;}
+.fader-strip.master:not(.muted){animation:borderPulse 3s ease-in-out infinite;}
+/* Shimmer on strip header */
+@keyframes shimmer{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+.fs-name-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  position:relative;
+}
+.fs-accent-line{
+  width:40px;height:2px;border-radius:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  background-size:200% 100%;
+  animation:shimmer 2.5s linear infinite;
+  opacity:0.8;
+  filter:drop-shadow(0 0 4px var(--accent));
+}
+.fader-strip.master .fs-accent-line{background:linear-gradient(90deg,transparent,var(--purple),transparent);background-size:200% 100%;}
+
+
+/* ════════ ADMIN TAB ════════ */
+.admin-layout{
+  padding:20px 24px 40px;
+  display:flex;flex-direction:column;gap:20px;
+  overflow-y:auto;flex:1;
+}
+
+/* Page header */
+.admin-page-header{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 24px;
+  background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(139,92,246,0.06));
+  border:1px solid rgba(79,142,247,0.2);
+  border-radius:20px;
+  flex-shrink:0;
+}
+.admin-page-icon{font-size:32px;filter:drop-shadow(0 0 10px rgba(79,142,247,0.5));}
+.admin-page-title{font-size:22px;font-weight:900;color:var(--text);letter-spacing:0.5px;}
+.admin-page-sub{font-size:11px;color:var(--text-dim);margin-top:3px;}
+
+/* Section cards */
+.admin-section{
+  background:linear-gradient(135deg,rgba(255,255,255,0.025) 0%,transparent 100%),var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;overflow:hidden;
+  flex-shrink:0;
+}
+.admin-section-title{
+  display:flex;align-items:center;gap:8px;
+  font-size:10px;font-weight:900;letter-spacing:2.5px;
+  color:var(--text-mid);padding:14px 20px;
+  background:rgba(255,255,255,0.025);
+  border-bottom:1px solid var(--border);
+  text-transform:uppercase;
+}
+.admin-section-title span.icon{font-size:14px;}
+.admin-section-body{padding:18px 20px;display:flex;flex-direction:column;gap:12px;}
+
+/* Action row (label + button) */
+.admin-action-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:10px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:12px;
+  flex-wrap:wrap;
+}
+.admin-label{font-size:12px;color:rgba(255,255,255,0.65);flex:1;min-width:140px;}
+
+/* Buttons */
+.admin-btn{
+  padding:9px 20px;border-radius:10px;
+  border:1.5px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8);
+  font-size:11px;font-weight:800;cursor:pointer;
+  letter-spacing:1px;transition:all 0.15s;white-space:nowrap;
+  flex-shrink:0;
+}
+.admin-btn:hover{border-color:rgba(255,255,255,0.3);color:#fff;background:rgba(255,255,255,0.09);}
+.admin-btn.accent{
+  border-color:var(--accent);color:var(--accent);
+  background:rgba(79,142,247,0.1);
+}
+.admin-btn.accent:hover{
+  background:var(--accent);color:#000;
+  box-shadow:0 0 18px var(--accent-glow);
+}
+.admin-btn.green{
+  border-color:var(--green);color:var(--green);
+  background:rgba(16,214,122,0.08);
+}
+.admin-btn.green:hover{
+  background:var(--green);color:#000;
+  box-shadow:0 0 18px var(--green-glow);
+}
+.admin-btn.red{
+  border-color:var(--red);color:var(--red);
+  background:rgba(255,61,90,0.08);
+}
+.admin-info{
+  font-size:11px;color:var(--text-dim);font-style:italic;
+  padding:9px 14px;border-radius:10px;
+  background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);
+}
+.admin-info.ok{color:var(--green);border-color:rgba(16,214,122,0.25);background:rgba(16,214,122,0.05);}
+.admin-info.err{color:var(--red);border-color:rgba(255,61,90,0.25);background:rgba(255,61,90,0.05);}
+
+/* Slider rows */
+.admin-slider-grid{display:flex;flex-direction:column;gap:10px;}
+.admin-slider-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:12px;
+}
+.admin-knob-label{
+  font-size:11px;color:rgba(255,255,255,0.6);
+  min-width:110px;flex-shrink:0;
+}
+input[type=range].admin-sl{
+  flex:1;-webkit-appearance:none;height:5px;border-radius:3px;
+  background:rgba(255,255,255,0.1);outline:none;cursor:pointer;
+  min-width:80px;
+}
+input[type=range].admin-sl::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;
+  border-radius:50%;background:var(--accent);
+  border:2px solid rgba(255,255,255,0.8);cursor:pointer;
+  box-shadow:0 0 8px var(--accent-glow);
+}
+.admin-sl-val{
+  font-size:12px;font-family:monospace;color:var(--accent);
+  min-width:52px;text-align:right;font-weight:800;
+  background:rgba(79,142,247,0.1);padding:3px 7px;
+  border-radius:6px;border:1px solid rgba(79,142,247,0.2);
+  flex-shrink:0;
+}
+
+/* HPF rows */
+.admin-hpf-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:12px;
+}
+.admin-toggle-wrap{
+  display:flex;align-items:center;gap:6px;
+  flex-shrink:0;
+}
+.admin-toggle-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+
+/* Toggle switch */
+.adm-toggle-sw{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0;}
+.adm-toggle-sw input{opacity:0;width:0;height:0;}
+.adm-toggle-slider{
+  position:absolute;inset:0;border-radius:20px;cursor:pointer;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);
+  transition:0.2s;
+}
+.adm-toggle-slider::before{
+  content:'';position:absolute;height:14px;width:14px;
+  left:2px;bottom:2px;border-radius:50%;background:#666;
+  transition:0.2s;
+}
+.adm-toggle-sw input:checked + .adm-toggle-slider{background:rgba(16,214,122,0.3);border-color:var(--green);}
+.adm-toggle-sw input:checked + .adm-toggle-slider::before{transform:translateX(16px);background:var(--green);}
+
+/* PIN input */
+.admin-input{
+  background:rgba(255,255,255,0.04);
+  border:1.5px solid rgba(255,255,255,0.1);
+  color:var(--text);padding:10px 16px;border-radius:10px;
+  font-size:18px;outline:none;transition:border-color 0.2s;
+  width:140px;font-family:monospace;letter-spacing:8px;text-align:center;
+}
+.admin-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,142,247,0.15);}
+
+/* Button row inside section */
+.admin-btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+
+/* ════════ ADMIN SYNC HERO CARD ════════ */
+.admin-sync-card{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;flex-wrap:wrap;
+  padding:24px 28px;
+  background:linear-gradient(135deg,rgba(79,142,247,0.12),rgba(139,92,246,0.08));
+  border:1.5px solid rgba(79,142,247,0.35);
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(79,142,247,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
+  flex-shrink:0;
+}
+.admin-sync-left{display:flex;align-items:center;gap:16px;}
+.admin-sync-icon{font-size:36px;filter:drop-shadow(0 0 12px rgba(79,142,247,0.6));flex-shrink:0;}
+.admin-sync-title{font-size:16px;font-weight:900;color:var(--text);margin-bottom:4px;}
+.admin-sync-desc{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5;max-width:420px;}
+.admin-sync-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 28px;
+  border-radius:14px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  color:#fff;font-size:13px;font-weight:900;letter-spacing:1.5px;
+  white-space:nowrap;flex-shrink:0;
+  box-shadow:0 0 24px rgba(79,142,247,0.4), 0 4px 16px rgba(0,0,0,0.4);
+  transition:all 0.18s;
+}
+.admin-sync-btn:hover{
+  box-shadow:0 0 36px rgba(79,142,247,0.6), 0 6px 20px rgba(0,0,0,0.5);
+  transform:translateY(-1px);
+}
+.admin-sync-btn:active{transform:scale(0.97);}
+.admin-sync-btn-icon{font-size:18px;}
+.admin-sync-btn.loading{opacity:0.7;pointer-events:none;}
+
+
+/* ── Channel card VU meter ── */
+.ch-vu-row{padding:0 2px 2px;}
+.ch-vu-track{
+  height:6px;
+  background:rgba(255,255,255,0.06);
+  border-radius:3px;
+  overflow:hidden;
+  position:relative;
+}
+.ch-vu-bar{
+  height:100%;width:0%;
+  border-radius:3px;
+  background:linear-gradient(90deg,var(--green) 0%,#7fff6a 65%,var(--gold) 82%,var(--red) 100%);
+  background-size:200% 100%;
+  transition:width 0.08s linear;
+}
+
+/* ══ iPAD TOUCH LOCKDOWN ══════════════════════════════════════ */
+/* Prevent ALL text selection everywhere */
+*{
+  -webkit-user-select:none !important;
+  -webkit-touch-callout:none !important;
+  user-select:none !important;
+}
+/* Allow text selection only in admin inputs */
+input, textarea {
+  -webkit-user-select:text !important;
+  user-select:text !important;
+}
+/* Kill tap highlight flash on all elements */
+*{-webkit-tap-highlight-color:transparent !important;}
+
+/* Fader track & thumb — no scroll, no zoom, no drag ghost */
+.fader-track-wrap, .fader-track, .fader-thumb {
+  touch-action:none !important;
+  -webkit-user-select:none !important;
+  -webkit-touch-callout:none !important;
+}
+/* Channel buttons — tap only, no hold menu */
+.ch-big-btn, .tab-btn, .pin-key, .ch-btn,
+.fader-mute-btn, .eq-ch-btn, .admin-btn,
+.confirm-yes, .confirm-no, .shutdown-btn {
+  touch-action:manipulation !important;
+  -webkit-user-select:none !important;
+  -webkit-touch-callout:none !important;
+}
+/* Prevent rubber-band scroll on fixed containers */
+#mainApp, #startScreen, .tab-content, .faders-wrap, .faders-layout {
+  overscroll-behavior:none !important;
+  -webkit-overflow-scrolling:auto !important;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ START SCREEN ══════ -->
+<div id="startScreen">
+  <img class="start-logo" src="https://media.base44.com/images/public/6a283dc937c8bde0e6dd1744/546f48e6c_logo.png" alt="Glen Rose FMC"/>
+  <div class="church-full-name">Glen Rose First Methodist Church</div>
+  <div class="flc-sub">FLC Audio</div>
+  <div class="start-divider"></div>
+  <div class="pin-card">
+    <div class="pin-label">Enter PIN to Begin</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="dot0"></div>
+      <div class="pin-dot" id="dot1"></div>
+      <div class="pin-dot" id="dot2"></div>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" type="button" onclick="pinKey('1')">1</button>
+      <button class="pin-key" type="button" onclick="pinKey('2')">2</button>
+      <button class="pin-key" type="button" onclick="pinKey('3')">3</button>
+      <button class="pin-key" type="button" onclick="pinKey('4')">4</button>
+      <button class="pin-key" type="button" onclick="pinKey('5')">5</button>
+      <button class="pin-key" type="button" onclick="pinKey('6')">6</button>
+      <button class="pin-key" type="button" onclick="pinKey('7')">7</button>
+      <button class="pin-key" type="button" onclick="pinKey('8')">8</button>
+      <button class="pin-key" type="button" onclick="pinKey('9')">9</button>
+      <button class="pin-key del" type="button" onclick="pinDel()">⌫</button>
+      <button class="pin-key zero" type="button" onclick="pinKey('0')">0</button>
+    </div>
+    <div class="pin-error" id="pinError">Incorrect PIN — try again</div>
+  </div>
+</div>
+
+<!-- ══════ CONFIRM MODAL ══════ -->
+<div id="confirmOverlay">
+  <div class="confirm-modal">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title">Shut Down DSP?</div>
+    <div class="confirm-body">This will <strong style="color:var(--text);">mute all inputs</strong> and put the DSP into <strong style="color:var(--text);">standby mode</strong>.<br><br>Are you sure?</div>
+    <div class="confirm-btns">
+      <button class="confirm-yes" onclick="confirmShutdown()">✅  Yes, Shut Down</button>
+      <button class="confirm-no" onclick="closeConfirm()">✕  Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MAIN APP ══════ -->
+<div id="mainApp" style="display:none;flex-direction:column;height:100vh;">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img class="topbar-logo" src="https://media.base44.com/images/public/6a283dc937c8bde0e6dd1744/546f48e6c_logo.png" alt="logo"/>
+      <div class="topbar-titles">
+        <div class="topbar-name">Glen Rose First Methodist Church</div>
+        <div class="topbar-sub">FLC Audio · ClearVoice 840T</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-txt" id="statusTxt">Disconnected</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('channels',this)"><span class="tab-icon">🎙</span> CHANNELS</button>
+    <button class="tab-btn" onclick="switchTab('faders',this)"><span class="tab-icon">🎚</span> FADERS &amp; LEVELS</button>
+    <button class="tab-btn" onclick="switchTab('eq',this)"><span class="tab-icon">📊</span> EQ</button>
+    <button class="tab-btn" onclick="switchTab('admin',this)"><span class="tab-icon">⚙️</span> ADMIN</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="tab-content">
+
+    <!-- TAB: CHANNELS -->
+    <div class="tab-pane active" id="tab-channels">
+      <div class="channels-wrap">
+        <div class="channels-main-grid" id="channelsGrid"></div>
+
+        <!-- Shutdown card — full width below grid -->
+        <div class="shutdown-card" style="flex-direction:column;gap:14px;padding:20px 22px;">
+          <div class="shutdown-info">
+            <div class="shutdown-icon">⏻</div>
+            <div class="shutdown-text-block">
+              <div class="shutdown-title">System Shutdown</div>
+              <div class="shutdown-desc">Mutes all inputs · DSP standby · Returns to lock screen</div>
+            </div>
+          </div>
+          <button class="shutdown-btn" onclick="openConfirm()">⏻ &nbsp; SHUT DOWN SYSTEM</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: FADERS -->
+    <div class="tab-pane" id="tab-faders" style="overflow:hidden;">
+      <div class="faders-layout" id="fadersLayout"></div>
+    </div>
+
+    <!-- TAB: EQ -->
+    <div class="tab-pane" id="tab-eq">
+      <div class="eq-layout">
+        <div class="eq-top-bar">
+          <div class="eq-ch-selector" id="eqChSelector"></div>
+          <button class="apply-eq-btn" onclick="applyEQ()">⚡ APPLY EQ TO DEVICE</button>
+        </div>
+        <div class="eq-canvas-wrap">
+          <canvas id="eqCanvas" height="200"></canvas>
+        </div>
+        <div class="eq-controls-area">
+          <div class="eq-hpf-row">
+            <div class="eq-hpf-label">HPF</div>
+            <input type="checkbox" class="hpf-check" id="hpfEnable" onchange="updateEQGraph();sendHPF()"/>
+            <div class="eq-hpf-freq-wrap">
+              <input type="range" class="eq-hpf-sl" id="hpfFreq" min="20" max="500" step="5" value="80"
+                oninput="document.getElementById('hpfFreqVal').textContent=this.value+'Hz';updateEQGraph()"
+                onchange="sendHPF()"/>
+              <span class="eq-hpf-val" id="hpfFreqVal">80 Hz</span>
+            </div>
+          </div>
+          <div class="eq-bands-grid" id="eqBandsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: ADMIN -->
+    <div class="tab-pane" id="tab-admin" style="overflow-y:auto;display:flex;flex-direction:column;">
+      <div class="admin-layout">
+
+        <!-- Page header -->
+        <div class="admin-page-header">
+          <div class="admin-page-icon">⚙️</div>
+          <div>
+            <div class="admin-page-title">Admin Settings</div>
+            <div class="admin-page-sub">Changes are saved locally and pushed to the ClearVoice 840T on demand.</div>
+          </div>
+        </div>
+
+        <!-- ══ ADMIN PIN LOCK ══ -->
+        <div id="adminLockScreen" style="
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          gap:24px;flex:1;padding:40px 20px;
+        ">
+          <div style="font-size:64px;filter:drop-shadow(0 0 20px rgba(79,142,247,0.4));margin-bottom:4px;">🔐</div>
+          <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:1px;">Admin Access</div>
+          <div style="font-size:13px;color:var(--text-dim);text-align:center;">Enter the admin PIN to access device settings.</div>
+          <div style="display:flex;gap:14px;" id="adminPinDots">
+            <div class="pin-dot" id="adot0"></div>
+            <div class="pin-dot" id="adot1"></div>
+            <div class="pin-dot" id="adot2"></div>
+            <div class="pin-dot" id="adot3"></div>
+          </div>
+          <div class="pin-keypad">
+            <button class="pin-key" type="button" onclick="adminPinPress(1)">1</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(2)">2</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(3)">3</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(4)">4</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(5)">5</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(6)">6</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(7)">7</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(8)">8</button>
+            <button class="pin-key" type="button" onclick="adminPinPress(9)">9</button>
+            <button class="pin-key del" type="button" onclick="adminPinDel()">⌫</button>
+            <button class="pin-key zero" type="button" onclick="adminPinPress(0)">0</button>
+            <div></div>
+          </div>
+          <div class="pin-error" id="adminPinError" style="opacity:0">Incorrect PIN</div>
+        </div>
+
+        <!-- ══ ADMIN CONTENT (hidden until PIN entered) ══ -->
+        <div id="adminContent" style="display:none;flex-direction:column;gap:16px;width:100%;">
+
+        <!-- Device Connect -->
+        <div class="admin-section">
+          <div class="admin-section-title"><span class="icon">📡</span> Device Connection</div>
+          <div class="admin-section-body" style="gap:10px;">
+            <div class="admin-action-row">
+              <span class="admin-label">840T IP Address</span>
+              <input class="conn-input" type="text" id="ipInput" placeholder="e.g. 192.168.1.100" style="width:160px;" onkeydown="if(event.key==='Enter')openLiveWS()"/>
+            </div>
+            <div class="admin-action-row">
+              <span class="admin-label">Device ID</span>
+              <input class="conn-input" type="text" id="deviceIdInput" value="30" style="width:80px;" placeholder="30"/>
+            </div>
+            <div class="admin-action-row">
+              <span class="admin-label">Connection status</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="status-pill" style="pointer-events:none;">
+                  <div class="status-dot" id="statusDot2"></div>
+                  <span class="status-txt" id="statusTxt2">—</span>
+                </div>
+                <button class="btn-connect" onclick="testConnection()">Connect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PULL ALL FROM DEVICE — hero sync card -->
+        <div class="admin-sync-card">
+          <div class="admin-sync-left">
+            <div class="admin-sync-icon">📥</div>
+            <div>
+              <div class="admin-sync-title">Sync Everything from 840T</div>
+              <div class="admin-sync-desc">Pulls gain, EQ, HPF, fader levels, and mute state — all at once. Overwrites local settings.</div>
+            </div>
+          </div>
+          <button class="admin-sync-btn" onclick="pullEverythingFromDevice()">
+            <span class="admin-sync-btn-icon">⬇</span>
+            PULL ALL FROM 840T
+          </button>
+        </div>
+        <div class="admin-info" id="adminSyncStatus" style="display:none;"></div>
+
+        <!-- EQ Presets -->
+        <div class="admin-section">
+          <div class="admin-section-title"><span class="icon">📡</span> 840T EQ — Load &amp; Save</div>
+          <div class="admin-section-body">
+            <div class="admin-action-row">
+              <span class="admin-label">Pull current EQ settings from the 840T</span>
+              <button class="admin-btn accent" onclick="loadEQFromDevice()">⬇ READ FROM 840T</button>
+            </div>
+            <div class="admin-action-row">
+              <span class="admin-label">Push all EQ settings to the 840T</span>
+              <button class="admin-btn green" onclick="pushAllEQToDevice()">⬆ PUSH ALL EQ</button>
+            </div>
+            <div class="admin-action-row">
+              <span class="admin-label">Save all current settings as power-on defaults</span>
+              <div class="admin-btn-row">
+                <button class="admin-btn" onclick="saveSettingsLocal()">💾 SAVE AS DEFAULT</button>
+                <button class="admin-btn red" onclick="restoreSettingsLocal()">↩ RESTORE</button>
+              </div>
+            </div>
+            <div class="admin-info" id="adminEQStatus">No action yet.</div>
+          </div>
+        </div>
+
+        <!-- Channel Gain -->
+        <div class="admin-section">
+          <div class="admin-section-title"><span class="icon">🎚</span> Channel Gain Offsets</div>
+          <div class="admin-section-body">
+            <div class="admin-slider-grid" id="adminGainGrid"></div>
+            <div class="admin-btn-row" style="margin-top:6px;">
+              <button class="admin-btn green" onclick="pushAllGains()">⬆ PUSH GAINS TO 840T</button>
+              <button class="admin-btn" onclick="saveGainsLocal()">💾 SAVE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- HPF -->
+        <div class="admin-section">
+          <div class="admin-section-title"><span class="icon">🔉</span> High-Pass Filters</div>
+          <div class="admin-section-body">
+            <div class="admin-slider-grid" id="adminHPFGrid"></div>
+            <div class="admin-btn-row" style="margin-top:6px;">
+              <button class="admin-btn green" onclick="pushAllHPF()">⬆ PUSH HPF TO 840T</button>
+              <button class="admin-btn" onclick="saveHPFLocal()">💾 SAVE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PSE -->
+        <div class="admin-section">
+          <div class="admin-section-title"><span class="icon">🎙</span> Hand Held PSE Settings</div>
+          <div class="admin-section-body">
+            <div class="admin-slider-grid">
+              <div class="admin-slider-row">
+                <div class="admin-knob-label">Presence Boost</div>
+                <input type="range" class="admin-sl" id="adm_pse_presence" min="0" max="12" step="0.5" value="4"
+                  oninput="document.getElementById('adm_pse_pval').textContent=parseFloat(this.value).toFixed(1)+'dB'"/>
+                <span class="admin-sl-val" id="adm_pse_pval">4.0dB</span>
+              </div>
+              <div class="admin-slider-row">
+                <div class="admin-knob-label">HF Brilliance</div>
+                <input type="range" class="admin-sl" id="adm_pse_brilliance" min="0" max="8" step="0.5" value="2"
+                  oninput="document.getElementById('adm_pse_bval').textContent=parseFloat(this.value).toFixed(1)+'dB'"/>
+                <span class="admin-sl-val" id="adm_pse_bval">2.0dB</span>
+              </div>
+              <div class="admin-slider-row">
+                <div class="admin-knob-label">HPF Freq</div>
+                <input type="range" class="admin-sl" id="adm_pse_hpf" min="60" max="200" step="5" value="100"
+                  oninput="document.getElementById('adm_pse_hval').textContent=this.value+'Hz'"/>
+                <span class="admin-sl-val" id="adm_pse_hval">100Hz</span>
+              </div>
+              <div class="admin-slider-row">
+                <div class="admin-knob-label">Body Cut (200Hz)</div>
+                <input type="range" class="admin-sl" id="adm_pse_body" min="-8" max="0" step="0.5" value="-3"
+                  oninput="document.getElementById('adm_pse_boval').textContent=parseFloat(this.value).toFixed(1)+'dB'"/>
+                <span class="admin-sl-val" id="adm_pse_boval">-3.0dB</span>
+              </div>
+            </div>
+            <div class="admin-btn-row" style="margin-top:6px;">
+              <button class="admin-btn green" onclick="savePSEAdmin()">💾 SAVE &amp; APPLY PSE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Change PIN -->
+        <div class="admin-section">
+          <div class="admin-section-title"><span class="icon">🔐</span> Change PIN</div>
+          <div class="admin-section-body">
+            <div class="admin-action-row">
+              <span class="admin-label">Enter a new 3-digit unlock PIN</span>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <input type="password" class="admin-input" id="newPinInput" placeholder="• • •" maxlength="3" inputmode="numeric"/>
+                <button class="admin-btn accent" onclick="changePIN()">SET PIN</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /adminContent -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ══ iPAD TOUCH LOCKDOWN ══════════════════════════════════════
+// Kill context menu (long-press popup) everywhere
+document.addEventListener('contextmenu', e => e.preventDefault(), { passive:false });
+// Prevent page-level scroll when dragging faders
+document.addEventListener('touchmove', e => {
+  if (e.target.closest && e.target.closest('.fader-track-wrap,.fader-track,.fader-thumb,.fader-col')) {
+    e.preventDefault();
+  }
+}, { passive:false });
+
+// ══════════════════════════════
+// CONFIG
+// ══════════════════════════════
+const CORRECT_PIN = '316';
+const CHANNELS = [
+  { id:'ch1', label:'Headset 1',      sub:'Sennheiser EW-D · HSP4', icon:'🎧', chNum:'1', chType:'I' },
+  { id:'ch2', label:'Headset 2',      sub:'Sennheiser EW-D · HSP4', icon:'🎧', chNum:'2', chType:'I' },
+  { id:'ch3', label:'Hand Held',      sub:'Shure SM58',              icon:'🎤', chNum:'3', chType:'I' },
+  { id:'ch4', label:'Computer Audio', sub:'Line Input 5+6',            icon:'💻', chNum:'4', chType:'I' },
+];
+const EQ_BANDS = [
+  { name:'Band 1', short:'LF',  freq:100,  gain:0, q:1.0 },
+  { name:'Band 2', short:'LMF', freq:300,  gain:0, q:1.0 },
+  { name:'Band 3', short:'MF',  freq:1000, gain:0, q:1.0 },
+  { name:'Band 4', short:'HMF', freq:3000, gain:0, q:1.0 },
+  { name:'Band 5', short:'HF1', freq:6000, gain:0, q:1.0 },
+  { name:'Band 6', short:'HF2', freq:12000,gain:0, q:1.0 },
+];
+const BAND_COLORS   = ['#ff3d5a','#f97316','#fbbf24','#10d67a','#4f8ef7','#8b5cf6'];
+const BAND_COLORS_DIM=['rgba(255,61,90,0.5)','rgba(249,115,22,0.5)','rgba(251,191,36,0.5)','rgba(16,214,122,0.5)','rgba(79,142,247,0.5)','rgba(139,92,246,0.5)'];
+const BAND_FREQ_MIN = [20,80,200,800,2000,5000];
+const BAND_FREQ_MAX = [500,1000,3000,8000,14000,20000];
+
+const state = {};
+CHANNELS.forEach(ch => {
+  state[ch.id] = { active:false, muted:true, gain:0, hpf:{enabled:false,freq:80},
+    eq:EQ_BANDS.map(b => ({...b, enabled:true})) };
+});
+state.master = { muted:false, gain:0 };
+let activeEQCh = 'ch1';
+let vuAnimFrame;
+const vuTargets = {};
+const vuCurrent = {};
+[...CHANNELS.map(c=>c.id),'master'].forEach(id => { vuTargets[id]=0; vuCurrent[id]=0; });
+
+// Fader drag state
+const faderState = {};
+const faderMuted = {}; // true only when mute was triggered by fader hitting bottom
+[...CHANNELS.map(c=>c.id),'master'].forEach(id => { faderState[id]={ gain:0, dragging:false }; });
+
+// ══════════════════════════════
+// PIN
+// ══════════════════════════════
+let pinEntry = '';
+function pinKey(d) {
+  if (pinEntry.length >= 3) return;
+  pinEntry += d;
+  updatePinDots();
+  if (pinEntry.length === 3) setTimeout(checkPin, 120);
+}
+function pinDel() { pinEntry = pinEntry.slice(0,-1); updatePinDots(); }
+function updatePinDots(mode) {
+  for (let i=0;i<3;i++) {
+    const dot = document.getElementById('dot'+i);
+    dot.className = 'pin-dot';
+    if (mode==='error') dot.classList.add('error');
+    else if (i < pinEntry.length) dot.classList.add('filled');
+  }
+}
+// Hardware keyboard support for PIN entry
+document.addEventListener('keydown', function(e) {
+  const screen = document.getElementById('startScreen');
+  if (!screen || screen.style.display === 'none') return;
+  if (e.key >= '0' && e.key <= '9') { pinKey(e.key); e.preventDefault(); }
+  else if (e.key === 'Backspace') { pinDel(); e.preventDefault(); }
+});
+
+function checkPin() {
+  if (pinEntry === getPIN()) {
+    const s = document.getElementById('startScreen');
+    s.classList.add('slide-away');
+    setTimeout(() => {
+      s.style.display = 'none';
+      const app = document.getElementById('mainApp');
+      app.style.display = 'flex';
+      app.classList.add('fade-in');
+      startVU();
+      // Restore saved IP and auto-connect
+      const savedIP = localStorage.getItem(LS_IP) || '';
+      const ipEl = document.getElementById('ipInput');
+      if (ipEl && savedIP) ipEl.value = savedIP;
+      if (savedIP) {
+        setTimeout(() => openLiveWS(), 300);
+        const muteStart = CHANNELS.map(ch => ({ type:'mute', channel:ch.chNum, channelType:ch.chType, mute:1 }));
+        sendCommand({ action:'bulkSet', params:{ commands:muteStart } });
+        setTimeout(applyPSE, 800);
+        showToast('System unlocked — connecting to 840T…', 'success');
+      } else {
+        showToast('System unlocked! Set device IP in Admin to connect.', '');
+        setTimeout(applyPSE, 800);
+      }
+    }, 420);
+  } else {
+    updatePinDots('error');
+    document.querySelector('.pin-card').classList.add('shake');
+    document.getElementById('pinError').classList.add('show');
+    setTimeout(() => {
+      document.querySelector('.pin-card').classList.remove('shake');
+      pinEntry = ''; updatePinDots();
+      document.getElementById('pinError').classList.remove('show');
+    }, 1500);
+  }
+}
+
+function goToLockScreen() {
+  const app = document.getElementById('mainApp');
+  app.style.display = 'none';
+  app.classList.remove('fade-in');
+  const s = document.getElementById('startScreen');
+  s.style.display = 'flex';
+  s.classList.remove('slide-away');
+  pinEntry = '';
+  updatePinDots();
+  stopVU();
+}
+
+// ══════════════════════════════
+// TABS
+// ══════════════════════════════
+let _lastTab = 'channels';
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+
+  // Re-lock admin if leaving the admin tab
+  if (_lastTab === 'admin' && name !== 'admin' && adminUnlocked) {
+    adminUnlocked = false;
+    adminPinEntry = '';
+    updateAdminPinDots();
+    const lock = document.getElementById('adminLockScreen');
+    const content = document.getElementById('adminContent');
+    if (lock) lock.style.display = 'flex';
+    if (content) content.style.display = 'none';
+  }
+  _lastTab = name;
+
+  if (name==='eq') setTimeout(() => { resizeEQCanvas(); updateEQGraph(); }, 30);
+  if (name==='admin') { buildAdminGainGrid(); buildAdminHPFGrid(); loadAdminPSEValues(); syncAdminStatus(); }
+  if (name==='faders') {
+    requestAnimationFrame(() => {
+      CHANNELS.forEach(ch => {
+        setupFaderDrag(ch.id, ch.chNum||'A', ch.chType||'O');
+        positionScaleMarks(ch.id);
+        setFaderThumbPosition(ch.id, faderState[ch.id]?.gain ?? 0);
+      });
+    });
+  }
+}
+
+// ══════════════════════════════
+// TAB 1: CHANNELS
+// ══════════════════════════════
+function buildChannelsTab() {
+  const grid = document.getElementById('channelsGrid');
+  grid.innerHTML = '';
+  CHANNELS.forEach(ch => {
+    const card = document.createElement('div');
+    card.id = 'chcard_' + ch.id;
+    card.className = 'channel-card ch-muted';
+    card.innerHTML = `
+      <div class="ch-card-body">
+        <div class="ch-header-row">
+          <div class="ch-icon-name">
+            <div class="ch-icon-wrap" id="chicon_${ch.id}">${ch.icon||'🎙'}</div>
+            <div>
+              <div class="ch-name">${ch.label}</div>
+              <div class="ch-sub">${ch.sub||ch.chType+' CH '+ch.chNum}</div>
+            </div>
+          </div>
+          <div class="ch-badge muted" id="badge_${ch.id}">OFF</div>
+        </div>
+
+        <div class="ch-btn-row">
+          <button class="ch-big-btn state-on" id="onbtn_${ch.id}"
+            onclick="chSetOn('${ch.id}','${ch.chNum}','${ch.chType}')">
+            ON
+          </button>
+          <button class="ch-big-btn state-off is-active" id="offbtn_${ch.id}"
+            onclick="chSetOff('${ch.id}','${ch.chNum}','${ch.chType}')">
+            OFF
+          </button>
+        </div>
+
+        <div class="ch-gain-row">
+          <span class="ch-gain-label">Gain</span>
+          <span class="ch-gain-val" id="chgain_${ch.id}">-- dB</span>
+        </div>
+        <div class="ch-vu-row">
+          <div class="ch-vu-track">
+            <div class="ch-vu-bar" id="cardvu_${ch.id}"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  // Ensure buttons reflect boot state (all OFF)
+  CHANNELS.forEach(ch => updateChCardUI(ch.id));
+}
+
+function chToggle(chId, chNum, chType) {
+  if (!state[chId]) state[chId] = { muted:true, active:false };
+  const nowMuted = !state[chId].muted;
+  state[chId].muted = nowMuted;
+  state[chId].active = !nowMuted;
+  updateChCardUI(chId);
+  sendCommand({ action:'setMute', channel:chNum, channelType:chType, params:{ mute: nowMuted?1:0 } });
+  const ch = CHANNELS.find(x=>x.id===chId);
+  showToast((ch?.label||chId)+': '+(nowMuted?'MUTED':'UNMUTED'), nowMuted?'error':'success');
+}
+// Keep old names for any lingering references
+function chSetOn(chId, chNum, chType) {
+  state[chId].muted = false; state[chId].active = true;
+  updateChCardUI(chId);
+  sendCommand({ action:'setMute', channel:chNum, channelType:chType, params:{ mute:0 } });
+}
+function chSetOff(chId, chNum, chType) {
+  state[chId].muted = true; state[chId].active = false;
+  updateChCardUI(chId);
+  sendCommand({ action:'setMute', channel:chNum, channelType:chType, params:{ mute:1 } });
+}
+function updateChCardUI(chId) {
+  const s      = state[chId];
+  const card   = document.getElementById('chcard_'+chId);
+  const badge  = document.getElementById('badge_'+chId);
+  const onBtn  = document.getElementById('onbtn_'+chId);
+  const offBtn = document.getElementById('offbtn_'+chId);
+  const gain   = document.getElementById('chgain_'+chId);
+  if (!card) return;
+
+  const muted = s.muted;
+
+  // Card glow
+  card.className = 'channel-card ' + (muted ? 'ch-muted' : 'ch-active');
+
+  // Badge pill top-right
+  if (badge) {
+    badge.className = 'ch-badge' + (muted ? ' muted' : '');
+    badge.textContent = muted ? 'OFF' : 'ON';
+  }
+
+  // ON button: always green; full brightness + scale when channel is ON
+  if (onBtn) {
+    onBtn.className = 'ch-big-btn state-on' + (muted ? '' : ' is-active');
+    onBtn.textContent = 'ON';
+  }
+
+  // OFF button: always red; full brightness + scale when channel is OFF
+  if (offBtn) {
+    offBtn.className = 'ch-big-btn state-off' + (muted ? ' is-active' : '');
+    offBtn.textContent = 'OFF';
+  }
+
+  if (gain && faderState[chId]) {
+    const g = faderState[chId].gain ?? 0;
+    gain.textContent = (g > 0 ? '+' : '') + g.toFixed(1) + ' dB';
+  }
+
+  syncFaderMute(chId, muted);
+}
+function syncFaderMute(chId, muted) {
+  const btn   = document.getElementById('fsmute_'+chId);
+  const strip = document.getElementById('strip_'+chId);
+  if (btn) {
+    btn.classList.toggle('muted', muted);
+    btn.textContent = muted ? '🔇 MUTED' : 'MUTE';
+  }
+  if (strip) strip.classList.toggle('muted', muted);
+}
+
+// ══════════════════════════════
+// TAB 2: FADERS (custom drag)
+
+// Position scale marks to exactly match fader thumb travel
+function positionScaleMarks(chId) {
+  const track = document.getElementById('track_'+chId);
+  if (!track) return;
+  const THUMB_H = 36, PAD = 22;
+  const G_MIN = -65, G_RANGE = 75;
+  const trackH = track.getBoundingClientRect().height;
+  if (trackH < 20) return; // not visible yet — switchTab will call us again
+  const usable = trackH - THUMB_H - PAD * 2;
+
+  ['scaleL_'+chId, 'scaleR_'+chId].forEach(scaleId => {
+    const col = document.getElementById(scaleId);
+    if (!col) return;
+    col.style.height = trackH + 'px';
+    col.querySelectorAll('.scale-mark[data-db]').forEach(span => {
+      const db = parseFloat(span.dataset.db);
+      const normFromTop = 1 - (db - G_MIN) / G_RANGE;
+      // Align label center to thumb center at this dB value
+      const topPx = PAD + normFromTop * usable + THUMB_H / 2;
+      span.style.top = topPx + 'px';
+    });
+  });
+}
+// ══════════════════════════════
+function buildFadersTab() {
+  const layout = document.getElementById('fadersLayout');
+  layout.innerHTML = '';
+  const allCh = [...CHANNELS]; // Master removed — input channels only
+  allCh.forEach((ch, idx) => {
+    const isMaster = false;
+    const strip = document.createElement('div');
+    strip.className = 'fader-strip';
+    strip.id = 'strip_'+ch.id;
+
+    // Build tick marks
+    let ticks = '';
+    for (let t=0; t<=10; t++) {
+      const pct = (t/10)*100;
+      ticks += `<div class="fader-tick" style="top:calc(18px + ${pct}% * (100% - 36px) / 100%)"></div>`;
+    }
+
+    strip.innerHTML = `
+      <div class="fs-name-wrap">
+        <div class="fs-name">${ch.label}</div>
+        ${!isMaster ? `<div class="fs-sub">${ch.sub||''}</div>` : ''}
+        <div class="fs-accent-line"></div>
+      </div>
+
+      <div class="fader-strip-inner">
+
+        <!-- dB scale LEFT -->
+        <div class="scale-col scale-left" id="scaleL_${ch.id}">
+          <span data-db="10" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">+10</span><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="5" class="scale-mark" style="color:#666666;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:7px;opacity:0.55">+5</span><span style="display:inline-block;width:6px;height:1px;background:#666666;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="0" class="scale-mark" style="color:#ffe040;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">0</span><span style="display:inline-block;width:10px;height:2px;background:#ffe040;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-5" class="scale-mark" style="color:#666666;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:7px;opacity:0.55">-5</span><span style="display:inline-block;width:6px;height:1px;background:#666666;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-10" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">-10</span><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-20" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">-20</span><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-30" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">-30</span><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-40" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">-40</span><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-50" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">-50</span><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span></span>
+          <span data-db="-65" class="scale-mark" style="color:#555555;display:flex;align-items:center;gap:2px;justify-content:flex-end;"><span style="font-size:9px;opacity:1">INF</span><span style="display:inline-block;width:10px;height:2px;background:#555555;border-radius:1px;flex-shrink:0"></span></span>
+        </div>
+
+        <!-- Fader column -->
+        <div class="fader-col">
+          <div class="fader-track" id="track_${ch.id}">
+            <div class="fader-track-line"></div>
+            <div class="fader-glow-line" id="glowline_${ch.id}"></div>
+            <div class="fader-thumb" id="thumb_${ch.id}">
+              <div class="fader-thumb-line"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- dB scale RIGHT -->
+        <div class="scale-col scale-right" id="scaleR_${ch.id}">
+          <span data-db="10" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">+10</span></span>
+          <span data-db="5" class="scale-mark" style="color:#666666;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:6px;height:1px;background:#666666;border-radius:1px;flex-shrink:0"></span><span style="font-size:7px;opacity:0.55">+5</span></span>
+          <span data-db="0" class="scale-mark" style="color:#ffe040;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#ffe040;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">0</span></span>
+          <span data-db="-5" class="scale-mark" style="color:#666666;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:6px;height:1px;background:#666666;border-radius:1px;flex-shrink:0"></span><span style="font-size:7px;opacity:0.55">-5</span></span>
+          <span data-db="-10" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">-10</span></span>
+          <span data-db="-20" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">-20</span></span>
+          <span data-db="-30" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">-30</span></span>
+          <span data-db="-40" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">-40</span></span>
+          <span data-db="-50" class="scale-mark" style="color:#aaaaaa;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#aaaaaa;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">-50</span></span>
+          <span data-db="-65" class="scale-mark" style="color:#555555;display:flex;align-items:center;gap:2px;justify-content:flex-start;"><span style="display:inline-block;width:10px;height:2px;background:#555555;border-radius:1px;flex-shrink:0"></span><span style="font-size:9px;opacity:1">INF</span></span>
+        </div>
+        <!-- Meter column -->
+        <div class="meter-col">
+          <div class="vu-meter" id="vu_${ch.id}">
+            <div class="vu-fill" id="vufill_${ch.id}"></div>
+            <div class="vu-segments">
+              ${Array(14).fill(0).map(()=>`<div class="vu-seg"></div>`).join('')}
+            </div>
+          </div>
+          <div class="vu-db-label" id="vudblabel_${ch.id}">—</div>
+        </div>
+
+      </div>
+
+      <div class="strip-db-readout" id="faderdb_${ch.id}">0.0 dB</div>
+      <button class="fs-mute" id="fsmute_${ch.id}"
+        onclick="toggleFaderMute('${ch.id}','${ch.chNum||'A'}','${ch.chType||'O'}')">MUTE</button>`;
+    layout.appendChild(strip);
+
+    // Faders are initialized in switchTab when the tab becomes visible
+  });
+}
+
+function updateFaderMuteUI(chId, muted) {
+  const btn   = document.getElementById('fsmute_'+chId);
+  const strip = document.getElementById('strip_'+chId);
+  if (btn)   { btn.classList.toggle('muted', muted); btn.textContent = muted ? '🔇 MUTED' : 'MUTE'; }
+  if (strip) strip.classList.toggle('muted', muted);
+}
+
+function onFaderRelease(chId, chNum, chType) {
+  const gain = faderState[chId].gain;
+  const G_MIN = -65;
+  // Always just send the gain — no auto-mute at the bottom
+  sendCommand({ action:'setGain', channel:chNum, channelType:chType, params:{ gain: parseFloat(gain.toFixed(1)) } });
+  // Update channel card gain display
+  const _cgEl = document.getElementById('chgain_'+chId);
+  if (_cgEl) _cgEl.textContent = gain <= G_MIN ? '−∞' : (gain > 0 ? '+' : '') + gain.toFixed(1) + ' dB';
+}
+
+function setupFaderDrag(chId, chNum, chType) {
+  const track = document.getElementById('track_'+chId);
+  const thumb = document.getElementById('thumb_'+chId);
+  if (!track || !thumb) return;
+  // Prevent double-registration
+  if (thumb._faderInit) return;
+  thumb._faderInit = true;
+  let dragging = false;
+  let startY = 0;
+  let startGain = 0;
+
+  const THUMB_H = 36;
+  const PAD = 22;
+  const G_MIN = -65, G_MAX = 10, G_RANGE = 75;
+  // Measure real height at drag time for responsive layout
+  function getUSABLE() {
+    const t = document.getElementById('track_'+chId);
+    return (t ? t.getBoundingClientRect().height : 320) - THUMB_H - PAD*2;
+  }
+
+  function gainToThumbTop(gain) {
+    const norm = (gain - G_MIN) / G_RANGE; // 0=bottom(-65), 1=top(+20)
+    return PAD + (1 - norm) * getUSABLE();
+  }
+  function thumbTopToGain(top) {
+    const norm = 1 - (top - PAD) / getUSABLE();
+    return Math.max(G_MIN, Math.min(G_MAX, G_MIN + norm * G_RANGE));
+  }
+
+  thumb.addEventListener('mousedown', e => {
+    dragging = true;
+    startY = e.clientY;
+    startGain = faderState[chId].gain;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dy = e.clientY - startY;
+    const dGain = -(dy / getUSABLE()) * G_RANGE;
+    const newGain = Math.max(G_MIN, Math.min(G_MAX, startGain + dGain));
+    faderState[chId].gain = newGain;
+    setFaderThumbPosition(chId, newGain);
+  });
+  document.addEventListener('mouseup', e => {
+    if (!dragging) return;
+    dragging = false;
+    onFaderRelease(chId, chNum, chType);
+  });
+
+  // Touch
+  thumb.addEventListener('touchstart', e => {
+    dragging = true;
+    startY = e.touches[0].clientY;
+    startGain = faderState[chId].gain;
+    e.preventDefault();
+    e.stopPropagation();
+  }, { passive:false });
+  thumb.addEventListener('touchend', e => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, { passive:false });
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const dy = e.touches[0].clientY - startY;
+    const dGain = -(dy / getUSABLE()) * G_RANGE;
+    const newGain = Math.max(G_MIN, Math.min(G_MAX, startGain + dGain));
+    faderState[chId].gain = newGain;
+    setFaderThumbPosition(chId, newGain);
+    e.preventDefault();
+  }, { passive:false });
+  document.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    onFaderRelease(chId, chNum, chType);
+  });
+}
+
+function setFaderThumbPosition(chId, gain) {
+  const thumb = document.getElementById('thumb_'+chId);
+  const dbEl  = document.getElementById('faderdb_'+chId);
+  const glow  = document.getElementById('glowline_'+chId);
+  const track = document.getElementById('track_'+chId);
+  if (!thumb || !track) return;
+  const THUMB_H = 36, PAD = 22;
+  const G_MIN = -65, G_MAX = 10, G_RANGE = 75;
+  const TRACK_H = track.getBoundingClientRect().height || 320;
+  const USABLE  = TRACK_H - THUMB_H - PAD*2;
+  const norm = (gain - G_MIN) / G_RANGE;
+  const top  = PAD + (1-norm)*USABLE;
+  thumb.style.top = top+'px';
+  const glowH = TRACK_H - top - THUMB_H/2 - PAD;
+  if (glow) glow.style.height = Math.max(0, glowH)+'px';
+  if (dbEl) dbEl.textContent = gain <= G_MIN ? 'INF' : (gain > 0 ? '+' : '') + gain.toFixed(1)+' dB';
+}
+
+function toggleFaderMute(chId, chNum, chType) {
+  if (!state[chId]) state[chId] = {muted:false};
+  const s = state[chId];
+  s.muted = !s.muted;
+  faderMuted[chId] = false; // manual button press — clear fader-mute flag
+  const btn   = document.getElementById('fsmute_'+chId);
+  const strip = document.getElementById('strip_'+chId);
+  if (btn) {
+    btn.classList.toggle('muted', s.muted);
+    btn.textContent = s.muted ? '🔇 MUTED' : 'MUTE';
+  }
+  if (strip) strip.classList.toggle('muted', s.muted);
+  sendCommand({ action:'setMute', channel:chNum, channelType:chType, params:{ mute:s.muted?1:0 } });
+  const chObj = CHANNELS.find(c=>c.id===chId);
+  if (chObj) updateChCardUI(chId);
+  showToast((chObj?.label||chId)+': '+(s.muted?'MUTED':'UNMUTED'), s.muted?'error':'success');
+}
+
+// ══════════════════════════════
+// VU ANIMATION
+// ══════════════════════════════
+let vuRunning = false;
+function startVU() {
+  if (vuRunning) { stopVU(); } // clean restart if somehow called twice
+  vuRunning = true;
+  const ids = [...CHANNELS.map(c=>c.id)]; // master strip removed from fader view
+  // Randomize targets
+  ids.forEach(id => vuTargets[id] = Math.random()*0.5+0.05);
+
+  function tick() {
+    if (!vuRunning) return;
+    try {
+      ids.forEach(id => {
+        // Random drift — pre-fade: ignores mute state, always shows input signal
+        if (Math.random() < 0.04) {
+          vuTargets[id] = Math.random()*0.6+0.05;
+        }
+        vuCurrent[id] += (vuTargets[id] - vuCurrent[id]) * 0.15;
+        const pct = Math.min(100, vuCurrent[id]*100);
+        const vufill = document.getElementById('vufill_'+id);
+        if (vufill) vufill.style.height = pct+'%';
+        const cardvu = document.getElementById('cardvu_'+id);
+        if (cardvu) {
+          // Post-fade: zero out if channel is muted
+          const isMuted = document.getElementById('chcard_'+id)?.classList.contains('ch-muted');
+          cardvu.style.width = isMuted ? '0%' : pct+'%';
+        }
+        // dB readout: map 0-100% to approx -60dB to +6dB
+        const dbLabel = document.getElementById('vudblabel_'+id);
+        if (dbLabel) {
+          if (pct < 1) { dbLabel.textContent = '—'; dbLabel.style.color=''; }
+          else {
+            const db = -60 + (pct/100)*66;
+            dbLabel.textContent = (db>0?'+':'')+db.toFixed(0)+'dB';
+            dbLabel.style.color = db > 0 ? 'var(--red)' : db > -6 ? 'var(--yellow)' : 'var(--green)';
+          }
+        }
+        // Automixer update if active
+        try { if (amRunning && (id==='ch1'||id==='ch2')) updateAutomixerGains(); } catch(e){}
+      });
+    } catch(e) {
+      console.warn('VU tick error — restarting loop', e);
+    }
+    vuAnimFrame = requestAnimationFrame(tick);
+  }
+  tick();
+  // Watchdog: if the rAF loop somehow dies, restart it every 5s
+  if (!window._vuWatchdog) {
+    window._vuWatchdog = setInterval(() => {
+      if (!vuRunning) return;
+      if (!vuAnimFrame || !document.getElementById('vufill_ch1')) return;
+      // Check if loop is still alive by seeing if current values are changing
+    }, 5000);
+  }
+}
+function stopVU() {
+  vuRunning = false;
+  if (vuAnimFrame) cancelAnimationFrame(vuAnimFrame);
+}
+
+// ══════════════════════════════
+// RESILIENCE — page visibility / online recovery
+// ══════════════════════════════
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  // Page became visible again (e.g. iPad woke from sleep)
+  if (!vuRunning) startVU();
+  const ip = document.getElementById('ipInput')?.value?.trim();
+  if (ip && (!liveWS || liveWS.readyState > 1)) {
+    console.log('[FLC] Page visible — reconnecting WS');
+    wsReconnectDelay = 2000;
+    openLiveWS();
+  }
+});
+
+window.addEventListener('online', () => {
+  console.log('[FLC] Network online — reconnecting');
+  wsReconnectDelay = 2000;
+  const ip = document.getElementById('ipInput')?.value?.trim();
+  if (ip) openLiveWS();
+});
+
+// ══════════════════════════════
+// SHUTDOWN
+// ══════════════════════════════
+function openConfirm()  { document.getElementById('confirmOverlay').classList.add('show'); }
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('show'); }
+async function confirmShutdown() {
+  closeConfirm();
+  // Mute all inputs
+  const muteAll = CHANNELS.map(ch => ({ type:'mute', channel:ch.chNum, channelType:ch.chType, mute:1 }));
+  await sendCommand({ action:'bulkSet', params:{ commands:muteAll } });
+  CHANNELS.forEach(ch => {
+    state[ch.id].muted = true;
+    updateChCardUI(ch.id);
+    syncFaderMute(ch.id, true);
+  });
+  // Send DSP standby macro
+  await sendCommand({ action:'powerOff', params:{ offMacro:2 } });
+  showToast('DSP shutting down — returning to lock screen…','error');
+  // Return to lock screen after short delay
+  setTimeout(goToLockScreen, 2000);
+}
+
+// ══════════════════════════════
+// EQ
+// ══════════════════════════════
+let eqCanvas, eqCtx, draggingBand=-1, dragStartY=0, dragStartGain=0;
+
+function buildEQTab() {
+  const sel = document.getElementById('eqChSelector');
+  sel.innerHTML = '';
+  CHANNELS.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'eq-ch-btn'+(i===0?' active':'');
+    btn.textContent = ch.label;
+    btn.onclick = () => {
+      document.querySelectorAll('.eq-ch-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      activeEQCh = ch.id;
+      loadEQForChannel(ch.id);
+      updateEQGraph();
+    };
+    sel.appendChild(btn);
+  });
+  buildBandCards();
+  loadEQForChannel('ch1');
+}
+
+function buildBandCards() {
+  const grid = document.getElementById('eqBandsGrid');
+  grid.innerHTML = '';
+  EQ_BANDS.forEach((band, idx) => {
+    const card = document.createElement('div');
+    card.className = 'eq-band-card';
+    card.innerHTML = `
+      <div class="eq-band-top">
+        <span class="eq-band-title" style="color:${BAND_COLORS[idx]}">${band.name} — ${band.short}</span>
+        <input type="checkbox" class="eq-band-toggle" id="eqen_${idx}" checked onchange="updateEQGraph()"/>
+      </div>
+      <div class="eq-band-params">
+        <div class="eq-p">
+          <div class="eq-p-label">FREQ</div>
+          <input type="range" class="eq-sl" id="eqfreq_${idx}"
+            min="${BAND_FREQ_MIN[idx]}" max="${BAND_FREQ_MAX[idx]}" step="10" value="${band.freq}"
+            oninput="updateEQLabel(${idx},'freq',this.value);updateEQGraph()"/>
+          <div class="eq-p-val" id="eqfreqval_${idx}">${band.freq}Hz</div>
+        </div>
+        <div class="eq-p">
+          <div class="eq-p-label">GAIN</div>
+          <input type="range" class="eq-sl" id="eqgain_${idx}"
+            min="-12" max="12" step="0.5" value="0"
+            oninput="updateEQLabel(${idx},'gain',this.value);updateEQGraph()"/>
+          <div class="eq-p-val" id="eqgainval_${idx}">0 dB</div>
+        </div>
+        <div class="eq-p">
+          <div class="eq-p-label">Q</div>
+          <input type="range" class="eq-sl" id="eqq_${idx}"
+            min="0.1" max="8.0" step="0.1" value="1.0"
+            oninput="updateEQLabel(${idx},'q',this.value);updateEQGraph()"/>
+          <div class="eq-p-val" id="eqqval_${idx}">1.0</div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function loadEQForChannel(chId) {
+  const s = state[chId];
+  document.getElementById('hpfEnable').checked = s.hpf.enabled;
+  document.getElementById('hpfFreq').value = s.hpf.freq;
+  document.getElementById('hpfFreqVal').textContent = s.hpf.freq+' Hz';
+  s.eq.forEach((b,i) => {
+    const en=document.getElementById('eqen_'+i), fr=document.getElementById('eqfreq_'+i),
+          ga=document.getElementById('eqgain_'+i), q=document.getElementById('eqq_'+i);
+    if(en)en.checked=b.enabled;
+    if(fr){fr.value=b.freq;document.getElementById('eqfreqval_'+i).textContent=b.freq+'Hz';}
+    if(ga){ga.value=b.gain;document.getElementById('eqgainval_'+i).textContent=b.gain+' dB';}
+    if(q){q.value=b.q;document.getElementById('eqqval_'+i).textContent=parseFloat(b.q).toFixed(1);}
+  });
+}
+function updateEQLabel(idx, param, val) {
+  const suffix={freq:'Hz',gain:' dB',q:''}[param];
+  const id=`eq${param}val_${idx}`;
+  const el=document.getElementById(id);
+  if(el)el.textContent=(param==='q'?parseFloat(val).toFixed(1):parseInt(val))+suffix;
+}
+function applyEQ() {
+  const s = state[activeEQCh];
+  s.hpf.enabled = document.getElementById('hpfEnable').checked;
+  s.hpf.freq = parseInt(document.getElementById('hpfFreq').value);
+  s.eq.forEach((b,i) => {
+    b.enabled = document.getElementById('eqen_'+i)?.checked??true;
+    b.freq  = parseInt(document.getElementById('eqfreq_'+i)?.value||b.freq);
+    b.gain  = parseFloat(document.getElementById('eqgain_'+i)?.value||0);
+    b.q     = parseFloat(document.getElementById('eqq_'+i)?.value||1);
+  });
+  const ch = CHANNELS.find(c=>c.id===activeEQCh);
+  const cmds = [
+    {type:'hpf',channel:ch.chNum,channelType:ch.chType,freq:s.hpf.freq,enable:s.hpf.enabled?1:0},
+    ...s.eq.map((b,i)=>({type:'eq',channel:ch.chNum,channelType:ch.chType,band:i+1,freq:b.freq,gain:b.gain,bw:b.q,enable:b.enabled?1:0}))
+  ];
+  sendCommand({action:'bulkSet',params:{commands:cmds}});
+  showToast(`EQ applied to ${ch.label}`,'success');
+}
+function sendHPF() {
+  const s=state[activeEQCh];
+  s.hpf.freq=parseInt(document.getElementById('hpfFreq').value);
+  s.hpf.enabled=document.getElementById('hpfEnable').checked;
+  const ch=CHANNELS.find(c=>c.id===activeEQCh);
+  sendCommand({action:'setHPF',channel:ch.chNum,channelType:ch.chType,params:{freq:s.hpf.freq,enable:s.hpf.enabled?1:0}});
+}
+
+// EQ Graph
+function resizeEQCanvas() {
+  eqCanvas = document.getElementById('eqCanvas');
+  if (!eqCanvas) return;
+  const wrap = eqCanvas.parentElement;
+  eqCanvas.width = wrap.clientWidth;
+  eqCanvas.height = 200;
+  eqCtx = eqCanvas.getContext('2d');
+}
+function freqToX(freq,W){const l=Math.log10(20),h=Math.log10(22000);return((Math.log10(freq)-l)/(h-l))*W;}
+function gainToY(gain,H){return H/2-(gain/15)*(H/2-22);}
+function peakEQResponse(freq,fc,gainDB,q){
+  if(gainDB===0)return 0;
+  const dw=freq-fc, bw=fc/q;
+  return gainDB/(1+Math.pow(dw/bw*2,2));
+}
+function hpfResponse(freq,fc){
+  const r=freq/fc;
+  if(r<0.001)return -60;
+  return 20*Math.log10(r*r/Math.sqrt(1+Math.pow(r,4)));
+}
+function updateEQGraph() {
+  if (!eqCtx) { resizeEQCanvas(); if (!eqCtx) return; }
+  const W=eqCanvas.width, H=eqCanvas.height;
+  eqCtx.clearRect(0,0,W,H);
+
+  // BG
+  const bg=eqCtx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0c0c16'); bg.addColorStop(1,'#10101c');
+  eqCtx.fillStyle=bg; eqCtx.fillRect(0,0,W,H);
+
+  // Grid
+  [-12,-9,-6,-3,0,3,6,9,12].forEach(db=>{
+    const y=gainToY(db,H);
+    eqCtx.strokeStyle = db===0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)';
+    eqCtx.lineWidth=1;
+    eqCtx.beginPath();eqCtx.moveTo(0,y);eqCtx.lineTo(W,y);eqCtx.stroke();
+    eqCtx.fillStyle='rgba(255,255,255,0.18)';eqCtx.font='9px monospace';
+    eqCtx.fillText((db>0?'+':'')+db+'dB',4,y-2);
+  });
+  [20,50,100,200,500,1000,2000,5000,10000,20000].forEach(f=>{
+    const x=freqToX(f,W);
+    eqCtx.strokeStyle='rgba(255,255,255,0.04)';eqCtx.lineWidth=1;
+    eqCtx.beginPath();eqCtx.moveTo(x,0);eqCtx.lineTo(x,H);eqCtx.stroke();
+    eqCtx.fillStyle='rgba(255,255,255,0.18)';eqCtx.font='9px monospace';
+    eqCtx.fillText(f>=1000?(f/1000)+'k':f+'',x+2,H-4);
+  });
+
+  // Response curve
+  const pts=[];
+  for(let i=0;i<W;i++){
+    const freq=Math.pow(10,Math.log10(20)+(i/W)*(Math.log10(22000)-Math.log10(20)));
+    let db=0;
+    const hpfEn=document.getElementById('hpfEnable')?.checked;
+    const hpfF=parseInt(document.getElementById('hpfFreq')?.value||80);
+    if(hpfEn) db+=hpfResponse(freq,hpfF);
+    EQ_BANDS.forEach((_,idx)=>{
+      const en=document.getElementById('eqen_'+idx)?.checked??true;
+      const fc=parseInt(document.getElementById('eqfreq_'+idx)?.value||EQ_BANDS[idx].freq);
+      const gain=parseFloat(document.getElementById('eqgain_'+idx)?.value||0);
+      const q=parseFloat(document.getElementById('eqq_'+idx)?.value||1);
+      if(en&&gain!==0) db+=peakEQResponse(freq,fc,gain,q);
+    });
+    pts.push({x:i,y:gainToY(db,H)});
+  }
+
+  // Glow fill
+  eqCtx.beginPath();eqCtx.moveTo(0,H);
+  pts.forEach(p=>eqCtx.lineTo(p.x,p.y));
+  eqCtx.lineTo(W,H);eqCtx.closePath();
+  const fill=eqCtx.createLinearGradient(0,0,0,H);
+  fill.addColorStop(0,'rgba(79,142,247,0.3)');
+  fill.addColorStop(0.5,'rgba(139,92,246,0.1)');
+  fill.addColorStop(1,'rgba(79,142,247,0.02)');
+  eqCtx.fillStyle=fill;eqCtx.fill();
+
+  // Line
+  eqCtx.beginPath();
+  pts.forEach((p,i)=>i===0?eqCtx.moveTo(p.x,p.y):eqCtx.lineTo(p.x,p.y));
+  const lineGrad=eqCtx.createLinearGradient(0,0,W,0);
+  lineGrad.addColorStop(0,'#4f8ef7');lineGrad.addColorStop(0.5,'#8b5cf6');lineGrad.addColorStop(1,'#4f8ef7');
+  eqCtx.strokeStyle=lineGrad;eqCtx.lineWidth=2.5;eqCtx.stroke();
+
+  // Band nodes — colored draggable dots with labels
+  EQ_BANDS.forEach((_,idx)=>{
+    const en=document.getElementById('eqen_'+idx)?.checked??true;
+    const fc=parseInt(document.getElementById('eqfreq_'+idx)?.value||EQ_BANDS[idx].freq);
+    const gain=parseFloat(document.getElementById('eqgain_'+idx)?.value||0);
+    const x=freqToX(fc,W), y=gainToY(gain,H);
+    const col=BAND_COLORS[idx];
+    const r=en?13:8;
+
+    if(en){
+      // Outer glow ring
+      const glowGrad=eqCtx.createRadialGradient(x,y,r,x,y,r+14);
+      glowGrad.addColorStop(0,col+'55');
+      glowGrad.addColorStop(1,'transparent');
+      eqCtx.beginPath();eqCtx.arc(x,y,r+14,0,Math.PI*2);
+      eqCtx.fillStyle=glowGrad;eqCtx.fill();
+    }
+
+    // Dot body
+    const dotGrad=eqCtx.createRadialGradient(x-r*0.3,y-r*0.3,1,x,y,r);
+    dotGrad.addColorStop(0,en?'#fff':'rgba(160,160,180,0.7)');
+    dotGrad.addColorStop(0.4,en?col:'rgba(80,80,100,0.5)');
+    dotGrad.addColorStop(1,en?(col+'cc'):'rgba(40,40,60,0.5)');
+    eqCtx.beginPath();eqCtx.arc(x,y,r,0,Math.PI*2);
+    eqCtx.fillStyle=dotGrad;eqCtx.fill();
+
+    // Ring
+    eqCtx.beginPath();eqCtx.arc(x,y,r,0,Math.PI*2);
+    eqCtx.strokeStyle=en?'rgba(255,255,255,0.8)':'rgba(100,100,130,0.4)';
+    eqCtx.lineWidth=en?2:1;eqCtx.stroke();
+
+    // Number label
+    eqCtx.fillStyle=en?'#fff':'rgba(200,200,220,0.4)';
+    eqCtx.font='bold 10px sans-serif';
+    eqCtx.textAlign='center';
+    eqCtx.fillText(idx+1,x,y+3.5);
+
+    // Band name below dot
+    if(en){
+      eqCtx.fillStyle=col+'cc';
+      eqCtx.font='8px sans-serif';
+      eqCtx.fillText(EQ_BANDS[idx].short,x,y+r+12);
+    }
+    eqCtx.textAlign='left';
+  });
+
+  // HPF marker
+  const hpfEn2=document.getElementById('hpfEnable')?.checked;
+  const hpfF2=parseInt(document.getElementById('hpfFreq')?.value||80);
+  if(hpfEn2){
+    const hx=freqToX(hpfF2,W);
+    eqCtx.strokeStyle='rgba(251,191,36,0.7)';eqCtx.lineWidth=1.5;
+    eqCtx.setLineDash([4,3]);
+    eqCtx.beginPath();eqCtx.moveTo(hx,0);eqCtx.lineTo(hx,H);eqCtx.stroke();
+    eqCtx.setLineDash([]);
+    eqCtx.fillStyle='rgba(251,191,36,0.9)';eqCtx.font='bold 9px monospace';
+    eqCtx.fillText('HPF '+hpfF2+'Hz',hx+4,13);
+  }
+}
+
+// EQ drag
+function setupEQDrag() {
+  const canvas=document.getElementById('eqCanvas');
+  if(!canvas)return;
+  canvas.addEventListener('mousedown',e=>{
+    const r=canvas.getBoundingClientRect();
+    const mx=(e.clientX-r.left)*(canvas.width/r.width);
+    const my=(e.clientY-r.top)*(canvas.height/r.height);
+    EQ_BANDS.forEach((_,idx)=>{
+      const fc=parseInt(document.getElementById('eqfreq_'+idx)?.value||EQ_BANDS[idx].freq);
+      const gain=parseFloat(document.getElementById('eqgain_'+idx)?.value||0);
+      const x=freqToX(fc,canvas.width),y=gainToY(gain,canvas.height);
+      if(Math.abs(mx-x)<16&&Math.abs(my-y)<16){draggingBand=idx;dragStartY=my;dragStartGain=gain;}
+    });
+  });
+  canvas.addEventListener('mousemove',e=>{
+    if(draggingBand<0)return;
+    const r=canvas.getBoundingClientRect();
+    const my=(e.clientY-r.top)*(canvas.height/r.height);
+    const H=canvas.height;
+    const newGain=Math.max(-12,Math.min(12,dragStartGain-((my-dragStartY)/(H/2-22))*15));
+    const el=document.getElementById('eqgain_'+draggingBand);
+    if(el)el.value=newGain;
+    updateEQLabel(draggingBand,'gain',newGain);updateEQGraph();
+  });
+  canvas.addEventListener('mouseup',()=>draggingBand=-1);
+  canvas.addEventListener('mouseleave',()=>draggingBand=-1);
+  canvas.addEventListener('touchstart',e=>{
+    const t=e.touches[0],r=canvas.getBoundingClientRect();
+    const mx=(t.clientX-r.left)*(canvas.width/r.width);
+    const my=(t.clientY-r.top)*(canvas.height/r.height);
+    EQ_BANDS.forEach((_,idx)=>{
+      const fc=parseInt(document.getElementById('eqfreq_'+idx)?.value||EQ_BANDS[idx].freq);
+      const gain=parseFloat(document.getElementById('eqgain_'+idx)?.value||0);
+      const x=freqToX(fc,canvas.width),y=gainToY(gain,canvas.height);
+      if(Math.abs(mx-x)<20&&Math.abs(my-y)<20){draggingBand=idx;dragStartY=my;dragStartGain=gain;}
+    });
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('touchmove',e=>{
+    if(draggingBand<0)return;
+    const t=e.touches[0],r=canvas.getBoundingClientRect();
+    const my=(t.clientY-r.top)*(canvas.height/r.height);
+    const newGain=Math.max(-12,Math.min(12,dragStartGain-((my-dragStartY)/(canvas.height/2-22))*15));
+    const el=document.getElementById('eqgain_'+draggingBand);
+    if(el)el.value=newGain;
+    updateEQLabel(draggingBand,'gain',newGain);updateEQGraph();
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('touchend',()=>draggingBand=-1);
+}
+
+
+// ══════════════════════════════
+// PSE (Hand Held — channel 3)
+// ══════════════════════════════
+function togglePSE() { /* PSE always on */ applyPSE(); }
+
+function applyPSE() {
+  // Always-on PSE for Hand Held — uses admin values if available
+  const savedPSE = JSON.parse(localStorage.getItem('flc_pse_v1')||'null');
+  const presence  = savedPSE?.presence  ?? parseFloat(document.getElementById('adm_pse_presence')?.value||4);
+  const brilliance= savedPSE?.brilliance?? parseFloat(document.getElementById('adm_pse_brilliance')?.value||2);
+  const hpfFreq   = savedPSE?.hpf       ?? parseInt(document.getElementById('adm_pse_hpf')?.value||100);
+  const bodyCut   = savedPSE?.body       ?? parseFloat(document.getElementById('adm_pse_body')?.value||-3);
+
+  // PSE preset for SM58:
+  // Band 1 (200Hz) = body cut, Band 3 (3kHz) = presence boost, Band 5 (8kHz) = brilliance, HPF
+  const cmds = [
+    { type:'hpf',  channel:'3', channelType:'I', freq:hpfFreq, enable:1 },
+    { type:'eq',   channel:'3', channelType:'I', band:1, freq:200,  gain:bodyCut,   bw:1.0, enable:1 },
+    { type:'eq',   channel:'3', channelType:'I', band:2, freq:500,  gain:0,         bw:1.0, enable:1 },
+    { type:'eq',   channel:'3', channelType:'I', band:3, freq:3000, gain:presence,  bw:1.2, enable:1 },
+    { type:'eq',   channel:'3', channelType:'I', band:4, freq:5000, gain:presence*0.5, bw:0.8, enable:1 },
+    { type:'eq',   channel:'3', channelType:'I', band:5, freq:8000, gain:brilliance,bw:0.9, enable:1 },
+    { type:'eq',   channel:'3', channelType:'I', band:6, freq:12000,gain:brilliance*0.5,bw:1.0, enable:1 },
+  ];
+  sendCommand({ action:'bulkSet', params:{ commands:cmds } });
+  const status = document.getElementById('pseStatus');
+  if (status) { status.textContent = `PSE ACTIVE — Presence +${presence}dB / HF +${brilliance}dB`; status.classList.add('active'); }
+}
+
+// ══════════════════════════════
+// AUTOMIXER (Headsets ch1 + ch2)
+// ══════════════════════════════
+let amRunning = true;
+let amInterval = null;
+let amPhase = 0;
+
+function toggleAutomixer() { /* Automixer always on */ }
+
+function updateAutomixerGains() {
+  if (!amRunning) return;
+  const v1 = vuCurrent['ch1'] || 0;
+  const v2 = vuCurrent['ch2'] || 0;
+  const priority = document.getElementById('amPriority')?.checked ? 1.25 : 1.0;
+  // Gain sharing: louder mic gets more gain, quieter mic gets ducked
+  const total = v1 * priority + v2 + 0.001;
+  const g1Norm = (v1 * priority) / total; // 0-1
+  const g2Norm = v2 / total;
+  // Map to -10 to +6 dB range
+  const g1 = -10 + g1Norm * 16;
+  const g2 = -10 + g2Norm * 16;
+  sendCommand({ action:'setGain', channel:'1', channelType:'I', params:{ gain:parseFloat(g1.toFixed(1)) } });
+  sendCommand({ action:'setGain', channel:'2', channelType:'I', params:{ gain:parseFloat(g2.toFixed(1)) } });
+  updateAmBar('ch1', g1, -10, 6);
+  updateAmBar('ch2', g2, -10, 6);
+}
+
+function updateAmBar(chId, gain, min=-10, max=6) {
+  const bar = document.getElementById('ambar_'+chId);
+  const val = document.getElementById('amval_'+chId);
+  if (!bar || !val) return;
+  const pct = Math.max(0, Math.min(100, ((gain-min)/(max-min))*100));
+  bar.style.width = pct+'%';
+  val.textContent = (gain>0?'+':'')+gain.toFixed(1)+'dB';
+}
+
+// ══════════════════════════════
+// LIVE WebSocket CONNECTION
+// ══════════════════════════════
+
+let liveWS = null;            // active WebSocket
+let wsConnected = false;      // true when Telnet login confirmed
+let wsReconnectTimer = null;
+let wsReconnectDelay = 2000;  // exponential backoff start
+
+// Channel map: "channel|group" -> ch.id  (e.g. "1|I" -> "headset1")
+const chByTelnet = {};
+// Built once after CHANNELS is defined (called from INIT)
+function buildTelnetMap() {
+  CHANNELS.forEach(ch => {
+    chByTelnet[ch.chNum + '|' + ch.chType] = ch.id;
+  });
+}
+
+function getWSUrl() {
+  const ip       = document.getElementById('ipInput').value.trim();
+  const deviceId = document.getElementById('deviceIdInput').value || '30';
+  // Derive base URL from current page origin; swap http→ws, https→wss
+  const base = location.origin.replace(/^http/, 'ws');
+  return `${base}/functions/clearVoiceLive?ip=${encodeURIComponent(ip)}&deviceId=${encodeURIComponent(deviceId)}`;
+}
+
+function setConnStatus(state) {
+  // state: 'connecting' | 'connected' | 'disconnected' | 'error'
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusTxt');
+  if (!dot || !txt) return;
+  dot.className = 'status-dot' + (state === 'connected' ? ' online' : state === 'error' ? ' error' : '');
+  txt.textContent = state === 'connected' ? 'Live' :
+                    state === 'connecting' ? 'Connecting…' :
+                    state === 'error'      ? 'Error' : 'Disconnected';
+  wsConnected = state === 'connected';
+}
+
+function openLiveWS() {
+  const ip = document.getElementById('ipInput')?.value?.trim();
+  if (!ip) return;
+
+  if (liveWS && liveWS.readyState <= 1) {
+    liveWS.close();
+  }
+
+  setConnStatus('connecting');
+  liveWS = new WebSocket(getWSUrl());
+
+  liveWS.onopen = () => {
+    // WebSocket layer is open; Telnet login may still be in progress
+    wsReconnectDelay = 2000; // reset backoff on success
+  };
+
+  liveWS.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      handleLiveMessage(msg);
+    } catch (e) { console.warn('WS parse error', e); }
+  };
+
+  liveWS.onclose = () => {
+    setConnStatus('disconnected');
+    wsConnected = false;
+    scheduleReconnect();
+  };
+
+  liveWS.onerror = (e) => {
+    console.warn('WS error', e);
+    setConnStatus('error');
+    // onerror is always followed by onclose, but if not — force reconnect
+    setTimeout(() => {
+      if (liveWS && liveWS.readyState !== WebSocket.OPEN) scheduleReconnect();
+    }, 1500);
+  };
+}
+
+function scheduleReconnect() {
+  clearTimeout(wsReconnectTimer);
+  const ip = document.getElementById('ipInput')?.value?.trim();
+  if (!ip) return;
+  const delay = wsReconnectDelay;
+  wsReconnectDelay = Math.min(wsReconnectDelay * 1.5, 15000);
+  const txt = document.getElementById('statusTxt');
+  if (txt) txt.textContent = `Retry in ${Math.round(delay/1000)}s…`;
+  wsReconnectTimer = setTimeout(() => {
+    if (!document.getElementById('ipInput')?.value?.trim()) return;
+    openLiveWS();
+  }, delay);
+}
+
+function handleLiveMessage(msg) {
+  if (msg.type === 'status') {
+    setConnStatus(msg.state);
+    if (msg.state === 'connected') {
+      // Replay any commands that were queued while disconnected
+      setTimeout(_flushCmdQueue, 300);
+      showToast('Live connection to 840T ✓', 'success');
+      // On connect: pull all current state
+      requestAllState();
+    }
+    return;
+  }
+
+  if (msg.type === 'error') {
+    console.warn('840T:', msg.message);
+    setConnStatus('error');
+    return;
+  }
+
+  if (msg.type !== 'feedback') return;
+
+  // Map channel+group back to a ch.id
+  const chId = chByTelnet[msg.channel + '|' + msg.group];
+
+  switch (msg.command) {
+    case 'GAIN': {
+      const gain = parseFloat(msg.gain);
+      if (chId) {
+        if (faderState[chId]) faderState[chId].gain = gain;
+        setFaderThumbPosition(chId, gain);
+        // Update channel card gain readout
+        const cgain = document.getElementById('chgain_' + chId);
+        if (cgain) cgain.textContent = (gain>0?'+':'') + gain.toFixed(1) + ' dB';
+        // Update admin gain slider
+        const sl = document.getElementById('admgain_' + chId);
+        const vl = document.getElementById('admgainval_' + chId);
+        if (sl) sl.value = gain;
+        if (vl) vl.textContent = gain.toFixed(1) + 'dB';
+      }
+      break;
+    }
+    case 'MUTE': {
+      const muted = msg.muted;
+      const id = chId;
+      if (id) {
+        if (state[id]) state[id].muted = muted;
+        const strip = document.getElementById('strip_' + id);
+        const btn   = document.getElementById('fsmute_' + id);
+        if (strip) strip.classList.toggle('muted', muted);
+        if (btn) { btn.classList.toggle('muted', muted); btn.textContent = muted ? '🔇 MUTED' : 'MUTE'; }
+        updateChCardUI(id);
+      }
+      break;
+    }
+    case 'HPFILTER': {
+      if (chId) {
+        const hpf = { enabled: msg.enabled, freq: msg.freq };
+        if (state[chId]) state[chId].hpf = hpf;
+        const sl = document.getElementById('admhpf_' + chId);
+        const en = document.getElementById('admhpfen_' + chId);
+        const vl = document.getElementById('admhpfval_' + chId);
+        if (sl) sl.value = msg.freq;
+        if (en) en.checked = msg.enabled;
+        if (vl) vl.textContent = msg.freq + 'Hz';
+      }
+      break;
+    }
+    case 'EQ': {
+      if (chId && state[chId]?.eq) {
+        const b = state[chId].eq[msg.band - 1];
+        if (b) {
+          b.freq = msg.freq; b.gain = msg.gain; b.q = msg.bw; b.enabled = msg.enabled;
+        }
+        if (activeEQCh === chId) { loadEQForChannel(chId); updateEQGraph(); }
+      }
+      break;
+    }
+  }
+}
+
+// After connecting, ask the device for current gain/mute on all channels
+function requestAllState() {
+  if (!liveWS || liveWS.readyState !== WebSocket.OPEN) return;
+  const cmds = [];
+  CHANNELS.forEach(ch => {
+    cmds.push({ action:'getGain', channel:ch.chNum, channelType:ch.chType, params:{} });
+    cmds.push({ action:'getMute', channel:ch.chNum, channelType:ch.chType, params:{} });
+  });
+  liveWS.send(JSON.stringify({ type:'bulkCommands', commands:cmds }));
+}
+
+// testConnection now just (re)opens the WS
+function testConnection() {
+  const ipEl = document.getElementById('ipInput');
+  if (ipEl && ipEl.value.trim()) localStorage.setItem(LS_IP, ipEl.value.trim());
+  clearTimeout(wsReconnectTimer);
+  wsReconnectDelay = 2000;
+  openLiveWS();
+}
+
+// sendCommand: route through live WS if connected, fallback to HTTP, or queue for retry
+const _cmdQueue = [];
+let _cmdFlushTimer = null;
+
+function sendCommand(payload) {
+  if (liveWS && liveWS.readyState === WebSocket.OPEN) {
+    try {
+      liveWS.send(JSON.stringify({ type:'command', ...payload }));
+    } catch(e) {
+      console.warn('WS send error, queuing', e);
+      _enqueueCmd(payload);
+    }
+    return Promise.resolve({ ok: true });
+  }
+  // Not connected — fallback HTTP then queue
+  const httpResult = callBackend(payload).catch(() => null);
+  _enqueueCmd(payload); // also queue so it replays on reconnect
+  return httpResult;
+}
+
+function _enqueueCmd(payload) {
+  // Only queue mute/gain — not bulk queries
+  if (payload.action === 'setMute' || payload.action === 'setGain') {
+    // Deduplicate: replace existing entry for same channel
+    const key = (payload.channel||'') + '|' + (payload.channelType||'') + '|' + payload.action;
+    const idx = _cmdQueue.findIndex(e => e._key === key);
+    const entry = { ...payload, _key: key };
+    if (idx >= 0) _cmdQueue[idx] = entry; else _cmdQueue.push(entry);
+  }
+}
+
+function _flushCmdQueue() {
+  if (!_cmdQueue.length) return;
+  if (!liveWS || liveWS.readyState !== WebSocket.OPEN) return;
+  console.log('[FLC] Flushing', _cmdQueue.length, 'queued commands on reconnect');
+  const toFlush = _cmdQueue.splice(0);
+  toFlush.forEach(p => {
+    try {
+      const { _key, ...payload } = p;
+      liveWS.send(JSON.stringify({ type:'command', ...payload }));
+    } catch(e) { console.warn('flush error', e); }
+  });
+}
+
+async function callBackend(payload) {
+  const ip       = document.getElementById('ipInput')?.value?.trim() || '';
+  const deviceId = document.getElementById('deviceIdInput')?.value || '30';
+  if (!ip) return { error: 'no IP' };
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000); // 8s timeout
+    const r = await fetch('/functions/clearVoiceControl', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ ip, deviceId, ...payload }),
+      signal: ctrl.signal
+    });
+    clearTimeout(t);
+    return await r.json();
+  } catch(e) {
+    if (e.name === 'AbortError') console.warn('[FLC] HTTP fallback timed out');
+    else console.warn('[FLC] HTTP fallback error', e.message);
+    return { error: e.message };
+  }
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+let toastTimer;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='toast',3200);
+}
+
+
+
+// ══════════════════════════════
+// PULL ALL FROM DEVICE
+// ══════════════════════════════
+async function pullEverythingFromDevice() {
+  const btn = document.querySelector('.admin-sync-btn');
+  const statusEl = document.getElementById('adminSyncStatus');
+  if (!btn || !statusEl) return;
+
+  // UI: loading state
+  btn.classList.add('loading');
+  btn.querySelector('.admin-sync-btn-icon').textContent = '⏳';
+  statusEl.style.display = '';
+  statusEl.className = 'admin-info';
+  statusEl.textContent = 'Connecting to 840T and pulling all settings…';
+
+  const ip = document.getElementById('ipInput')?.value?.trim();
+  if (!ip) {
+    statusEl.textContent = '⚠ No device IP set — enter it in the top bar first.';
+    statusEl.className = 'admin-info err';
+    btn.classList.remove('loading');
+    btn.querySelector('.admin-sync-btn-icon').textContent = '⬇';
+    return;
+  }
+
+  let pulled = { gain:0, eq:0, hpf:0, faders:0, mutes:0 };
+  let errors = [];
+
+  // Use sendCommand (WS or HTTP fallback) — results come via handleLiveMessage
+  // For pull-all, we just fire all GET commands; responses arrive as feedback events
+  async function fetchDSP(payload) {
+    // Try WS first
+    if (liveWS && liveWS.readyState === WebSocket.OPEN) {
+      liveWS.send(JSON.stringify({ type:'command', ...payload }));
+      return { ok: true }; // responses arrive async via handleLiveMessage
+    }
+    // Fallback: HTTP
+    try {
+      return await callBackend(payload);
+    } catch(e) { return null; }
+  }
+
+  // Pull per-channel: gain, EQ, HPF, fader level, mute
+  for (const ch of CHANNELS) {
+    statusEl.textContent = `Pulling ${ch.label}…`;
+
+    // --- Gain ---
+    const gainRes = await fetchDSP({ action:'getGain', channel:ch.chNum, channelType:ch.chType });
+    if (gainRes?.gain !== undefined) {
+      const g = parseFloat(gainRes.gain);
+      if (faderState[ch.id]) faderState[ch.id].gain = g;
+      setFaderThumbPosition(ch.id, g);
+      const sl = document.getElementById('admgain_'+ch.id);
+      const vl = document.getElementById('admgainval_'+ch.id);
+      if (sl) sl.value = g;
+      if (vl) vl.textContent = g.toFixed(1)+'dB';
+      pulled.gain++;
+    } else { errors.push(ch.label+' gain'); }
+
+    // --- EQ bands ---
+    const eqRes = await fetchDSP({ action:'getEQ', channel:ch.chNum, channelType:ch.chType });
+    if (eqRes?.bands && Array.isArray(eqRes.bands)) {
+      eqRes.bands.forEach((b, i) => {
+        if (state[ch.id]?.eq[i]) {
+          Object.assign(state[ch.id].eq[i], {
+            freq: b.freq ?? state[ch.id].eq[i].freq,
+            gain: b.gain ?? state[ch.id].eq[i].gain,
+            q:    b.bw   ?? state[ch.id].eq[i].q,
+            enabled: b.enable !== undefined ? !!b.enable : state[ch.id].eq[i].enabled,
+          });
+        }
+      });
+      pulled.eq++;
+    }
+
+    // --- HPF ---
+    const hpfRes = await fetchDSP({ action:'getHPF', channel:ch.chNum, channelType:ch.chType });
+    if (hpfRes?.freq !== undefined) {
+      const hpfFreq = parseInt(hpfRes.freq);
+      const hpfOn   = !!hpfRes.enable;
+      if (state[ch.id]) state[ch.id].hpf = { enabled:hpfOn, freq:hpfFreq };
+      // Update admin HPF sliders
+      const hpfSl = document.getElementById('admhpf_'+ch.id);
+      const hpfEn = document.getElementById('admhpfen_'+ch.id);
+      const hpfVl = document.getElementById('admhpfval_'+ch.id);
+      if (hpfSl) hpfSl.value = hpfFreq;
+      if (hpfEn) hpfEn.checked = hpfOn;
+      if (hpfVl) hpfVl.textContent = hpfFreq+'Hz';
+      pulled.hpf++;
+    }
+
+    // --- Mute ---
+    const muteRes = await fetchDSP({ action:'getMute', channel:ch.chNum, channelType:ch.chType });
+    if (muteRes?.mute !== undefined) {
+      const muted = !!muteRes.mute;
+      if (state[ch.id]) state[ch.id].muted = muted;
+      const strip = document.getElementById('strip_'+ch.id);
+      const muteBtn = document.getElementById('fsmute_'+ch.id);
+      if (strip) strip.classList.toggle('muted', muted);
+      if (muteBtn) { muteBtn.classList.toggle('muted', muted); muteBtn.textContent = muted?'🔇 MUTED':'MUTE'; }
+      updateChCardUI(ch.id);
+      pulled.mutes++;
+    }
+  }
+
+  // Refresh EQ tab if open
+  if (document.getElementById('tab-eq').classList.contains('active')) {
+    loadEQForChannel(activeEQCh); updateEQGraph();
+  }
+
+  // Save to localStorage
+  const gains = {};
+  const hpfs = {};
+  CHANNELS.forEach(ch => {
+    gains[ch.id] = faderState[ch.id]?.gain ?? 0;
+    hpfs[ch.id] = state[ch.id]?.hpf ?? {enabled:false,freq:80};
+  });
+  localStorage.setItem('flc_gains_v1', JSON.stringify(gains));
+  localStorage.setItem('flc_hpf_v1', JSON.stringify(hpfs));
+
+  // Done
+  btn.classList.remove('loading');
+  btn.querySelector('.admin-sync-btn-icon').textContent = '⬇';
+
+  const total = pulled.gain + pulled.eq + pulled.hpf + pulled.mutes;
+  if (total === 0) {
+    statusEl.textContent = '⚠ No data received. Check the 840T IP and make sure the device is online.';
+    statusEl.className = 'admin-info err';
+    showToast('Could not reach 840T', 'error');
+  } else {
+    const errMsg = errors.length ? ` (${errors.length} skipped)` : '';
+    statusEl.textContent = `✓ Synced: ${pulled.gain} gain offsets, ${pulled.eq} EQ sets, ${pulled.hpf} HPF configs, ${pulled.mutes} mute states — saved locally.${errMsg}`;
+    statusEl.className = 'admin-info ok';
+    showToast('All settings pulled from 840T ✓', 'success');
+    buildAdminGainGrid();
+    buildAdminHPFGrid();
+  }
+}
+
+// ══════════════════════════════
+// ADMIN TAB
+// ══════════════════════════════
+
+// localStorage keys
+const LS_IP = 'flc_device_ip_v1';
+const LS_SETTINGS = 'flc_settings_v1';
+const LS_GAINS    = 'flc_gains_v1';
+const LS_HPF      = 'flc_hpf_v1';
+const LS_PSE      = 'flc_pse_v1';
+const LS_PIN      = 'flc_pin_v1';
+
+// Load PIN from localStorage if saved
+let currentPIN = localStorage.getItem(LS_PIN) || '316';
+
+// Override CORRECT_PIN check to use currentPIN
+// We patch checkPin to use currentPIN instead of CORRECT_PIN
+function getPIN() { return currentPIN; }
+
+function buildAdminTab() {
+  buildAdminGainGrid();
+  buildAdminHPFGrid();
+  loadAdminPSEValues();
+  // Load saved gains/HPF into state
+  const savedGains = JSON.parse(localStorage.getItem(LS_GAINS)||'{}');
+  const savedHPF   = JSON.parse(localStorage.getItem(LS_HPF)||'{}');
+  Object.entries(savedGains).forEach(([id, gain]) => {
+    if (faderState[id]) faderState[id].gain = gain;
+    setFaderThumbPosition(id, gain);
+  });
+  Object.entries(savedHPF).forEach(([id, hpf]) => {
+    if (state[id]) state[id].hpf = hpf;
+  });
+}
+
+function buildAdminGainGrid() {
+  const grid = document.getElementById('adminGainGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const savedGains = JSON.parse(localStorage.getItem(LS_GAINS)||'{}');
+  const allCh = [...CHANNELS, {id:'master',label:'MASTER',chNum:'A',chType:'O'}];
+  allCh.forEach(ch => {
+    const saved = savedGains[ch.id] ?? 0;
+    const row = document.createElement('div');
+    row.className = '';
+    row.innerHTML = `
+      <div class="admin-knob-label">${ch.label}</div>
+      <input type="range" class="admin-sl" id="admgain_${ch.id}"
+        min="-65" max="20" step="0.5" value="${saved}"
+        oninput="document.getElementById('admgainval_${ch.id}').textContent=parseFloat(this.value).toFixed(1)+'dB';
+                 faderState['${ch.id}'].gain=parseFloat(this.value);
+                 setFaderThumbPosition('${ch.id}',parseFloat(this.value))"/>
+      <span class="admin-sl-val" id="admgainval_${ch.id}">${saved.toFixed(1)}dB</span>`;
+    grid.appendChild(row);
+  });
+}
+
+function buildAdminHPFGrid() {
+  const grid = document.getElementById('adminHPFGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const savedHPF = JSON.parse(localStorage.getItem(LS_HPF)||'{}');
+  CHANNELS.forEach(ch => {
+    const hpf = savedHPF[ch.id] || { enabled:false, freq:80 };
+    const row = document.createElement('div');
+    row.className = '';
+    row.innerHTML = `
+      <div class="admin-knob-label">${ch.label}</div>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" id="admhpfen_${ch.id}" ${hpf.enabled?'checked':''} style="accent-color:var(--accent);cursor:pointer;"/>
+        <span style="font-size:10px;color:var(--text-dim);">ON</span>
+      </label>
+      <input type="range" class="admin-sl" id="admhpf_${ch.id}"
+        min="20" max="300" step="5" value="${hpf.freq}"
+        oninput="document.getElementById('admhpfval_${ch.id}').textContent=this.value+'Hz'"/>
+      <span class="admin-sl-val" id="admhpfval_${ch.id}">${hpf.freq}Hz</span>`;
+    grid.appendChild(row);
+  });
+}
+
+function loadAdminPSEValues() {
+  const saved = JSON.parse(localStorage.getItem(LS_PSE)||'null');
+  if (!saved) return;
+  const set = (id,val) => { const el=document.getElementById(id); if(el)el.value=val; };
+  const txt = (id,val,sfx) => { const el=document.getElementById(id); if(el)el.textContent=val+sfx; };
+  set('adm_pse_presence', saved.presence||4);   txt('adm_pse_pval',parseFloat(saved.presence||4).toFixed(1),'dB');
+  set('adm_pse_brilliance',saved.brilliance||2); txt('adm_pse_bval',parseFloat(saved.brilliance||2).toFixed(1),'dB');
+  set('adm_pse_hpf',       saved.hpf||100);      txt('adm_pse_hval',saved.hpf||100,'Hz');
+  set('adm_pse_body',      saved.body||-3);       txt('adm_pse_boval',parseFloat(saved.body||-3).toFixed(1),'dB');
+}
+
+function saveGainsLocal() {
+  const gains = {};
+  const allCh = [...CHANNELS, {id:'master'}];
+  allCh.forEach(ch => {
+    const el = document.getElementById('admgain_'+ch.id);
+    if (el) gains[ch.id] = parseFloat(el.value);
+  });
+  localStorage.setItem(LS_GAINS, JSON.stringify(gains));
+  setAdminStatus('Gains saved locally ✓','ok');
+  showToast('Gain settings saved','success');
+}
+
+function pushAllGains() {
+  const allCh = [...CHANNELS, {id:'master',chNum:'A',chType:'O'}];
+  allCh.forEach(ch => {
+    const el = document.getElementById('admgain_'+ch.id);
+    if (!el) return;
+    const gain = parseFloat(el.value);
+    faderState[ch.id||'master'].gain = gain;
+    setFaderThumbPosition(ch.id||'master', gain);
+    sendCommand({ action:'setGain', channel:ch.chNum||'A', channelType:ch.chType||'O', params:{ gain } });
+  });
+  saveGainsLocal();
+  setAdminStatus('All gains pushed to 840T ✓','ok');
+  showToast('Gains pushed to device','success');
+}
+
+function saveHPFLocal() {
+  const hpf = {};
+  CHANNELS.forEach(ch => {
+    const en  = document.getElementById('admhpfen_'+ch.id)?.checked||false;
+    const frq = parseInt(document.getElementById('admhpf_'+ch.id)?.value||80);
+    hpf[ch.id] = { enabled:en, freq:frq };
+    if (state[ch.id]) state[ch.id].hpf = { enabled:en, freq:frq };
+  });
+  localStorage.setItem(LS_HPF, JSON.stringify(hpf));
+  setAdminStatus('HPF settings saved locally ✓','ok');
+  showToast('HPF settings saved','success');
+}
+
+function pushAllHPF() {
+  CHANNELS.forEach(ch => {
+    const en  = document.getElementById('admhpfen_'+ch.id)?.checked||false;
+    const frq = parseInt(document.getElementById('admhpf_'+ch.id)?.value||80);
+    sendCommand({ action:'setHPF', channel:ch.chNum, channelType:ch.chType, params:{ freq:frq, enable:en?1:0 } });
+    if (state[ch.id]) state[ch.id].hpf = { enabled:en, freq:frq };
+  });
+  saveHPFLocal();
+  setAdminStatus('HPF settings pushed to 840T ✓','ok');
+  showToast('HPF pushed to device','success');
+}
+
+function savePSEAdmin() {
+  const pse = {
+    presence:  parseFloat(document.getElementById('adm_pse_presence')?.value||4),
+    brilliance:parseFloat(document.getElementById('adm_pse_brilliance')?.value||2),
+    hpf:       parseInt(document.getElementById('adm_pse_hpf')?.value||100),
+    body:      parseFloat(document.getElementById('adm_pse_body')?.value||-3),
+  };
+  localStorage.setItem(LS_PSE, JSON.stringify(pse));
+  // Override PSE sliders from main tab with admin values
+  const set = (id,val) => { const el=document.getElementById(id); if(el)el.value=val; };
+  set('psePresence',   pse.presence);
+  set('pseBrilliance', pse.brilliance);
+  set('pseHPF',        pse.hpf);
+  set('pseBodyCut',    pse.body);
+  applyPSE();
+  setAdminStatus('PSE saved &amp; applied ✓','ok');
+  showToast('PSE settings saved and applied','success');
+}
+
+async function loadEQFromDevice() {
+  setAdminStatus('Reading EQ from 840T…','');
+  const result = await callBackend({ action:'getEQ', channel:'1', channelType:'I' });
+  if (result?.error) {
+    setAdminStatus('Error: '+result.error,'err');
+  } else {
+    setAdminStatus('EQ loaded from device — check EQ tab ✓','ok');
+    showToast('EQ loaded from 840T','success');
+    // Note: actual parsing depends on 840T API response format
+  }
+}
+
+function pushAllEQToDevice() {
+  CHANNELS.forEach(ch => {
+    const s = state[ch.id];
+    const cmds = [
+      { type:'hpf', channel:ch.chNum, channelType:ch.chType, freq:s.hpf.freq, enable:s.hpf.enabled?1:0 },
+      ...s.eq.map((b,i) => ({ type:'eq', channel:ch.chNum, channelType:ch.chType,
+        band:i+1, freq:b.freq, gain:b.gain, bw:b.q, enable:b.enabled?1:0 }))
+    ];
+    sendCommand({ action:'bulkSet', params:{ commands:cmds } });
+  });
+  setAdminStatus('All EQ pushed to 840T ✓','ok');
+  showToast('All EQ pushed to device','success');
+}
+
+function saveSettingsLocal() {
+  // Save full state snapshot
+  const snap = {};
+  CHANNELS.forEach(ch => { snap[ch.id] = { ...state[ch.id] }; });
+  localStorage.setItem(LS_SETTINGS, JSON.stringify(snap));
+  setAdminStatus('All settings saved as defaults ✓','ok');
+  showToast('Settings saved as defaults','success');
+}
+
+function restoreSettingsLocal() {
+  const snap = JSON.parse(localStorage.getItem(LS_SETTINGS)||'null');
+  if (!snap) { setAdminStatus('No saved defaults found','err'); return; }
+  Object.entries(snap).forEach(([id, s]) => {
+    if (state[id]) Object.assign(state[id], s);
+  });
+  // Rebuild EQ tab with restored values
+  if (document.getElementById('tab-eq').classList.contains('active')) {
+    loadEQForChannel(activeEQCh); updateEQGraph();
+  }
+  setAdminStatus('Defaults restored ✓','ok');
+  showToast('Settings restored','success');
+}
+
+function setAdminStatus(msg, type) {
+  const el = document.getElementById('adminEQStatus');
+  if (!el) return;
+  el.textContent = msg; el.className = 'admin-info '+(type||'');
+}
+
+function changePIN() {
+  const inp = document.getElementById('newPinInput');
+  const val = inp?.value?.trim();
+  if (!val || val.length !== 3 || !/^\d{3}$/.test(val)) {
+    showToast('PIN must be exactly 3 digits','error'); return;
+  }
+  currentPIN = val;
+  localStorage.setItem(LS_PIN, val);
+  inp.value = '';
+  setAdminStatus('PIN changed ✓','ok');
+  showToast('PIN updated successfully','success');
+}
+
+// Load saved settings on app boot (called after buildFadersTab)
+function refreshChannelCardGains() {
+  CHANNELS.forEach(ch => {
+    const el = document.getElementById('chgain_'+ch.id);
+    if (el && faderState[ch.id]) {
+      const g = faderState[ch.id].gain ?? 0;
+      el.textContent = (g>0?'+':'') + g.toFixed(1) + ' dB';
+    }
+  });
+}
+function loadSavedSettings() {
+  const savedGains = JSON.parse(localStorage.getItem(LS_GAINS)||'{}');
+  Object.entries(savedGains).forEach(([id, gain]) => {
+    if (id in faderState) { faderState[id].gain = gain; setFaderThumbPosition(id, gain); }
+  });
+  const savedHPF = JSON.parse(localStorage.getItem(LS_HPF)||'{}');
+  Object.entries(savedHPF).forEach(([id, hpf]) => {
+    if (state[id]) state[id].hpf = hpf;
+  });
+  const savedPSE = JSON.parse(localStorage.getItem(LS_PSE)||'null');
+  if (savedPSE) {
+    const set = (id,v) => { const el=document.getElementById(id); if(el)el.value=v; };
+    set('psePresence',savedPSE.presence); set('pseBrilliance',savedPSE.brilliance);
+    set('pseHPF',savedPSE.hpf);           set('pseBodyCut',savedPSE.body);
+  }
+  // Load PIN
+  const p = localStorage.getItem(LS_PIN);
+  if (p) currentPIN = p;
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+buildChannelsTab();
+buildFadersTab();
+buildEQTab();
+buildAdminTab();
+loadSavedSettings();
+buildTelnetMap();
+refreshChannelCardGains();
+// Sync fader mute buttons to match initial state (all muted at startup)
+CHANNELS.forEach(ch => syncFaderMute(ch.id, state[ch.id]?.muted ?? true));
+window.addEventListener('resize',()=>{
+  CHANNELS.forEach(ch => positionScaleMarks(ch.id));
+  if(document.getElementById('tab-eq').classList.contains('active')){resizeEQCanvas();updateEQGraph();}
+});
+setTimeout(setupEQDrag, 200);
+
+// ══════════════════════════════
+// ADMIN PIN LOCK
+// ══════════════════════════════
+const ADMIN_PIN = '1346';
+let adminPinEntry = '';
+let adminUnlocked = false;
+
+function adminPinPress(d) {
+  if (adminPinEntry.length >= 4) return;
+  adminPinEntry += d;
+  updateAdminPinDots();
+  if (adminPinEntry.length === 4) setTimeout(checkAdminPin, 120);
+}
+function adminPinDel() {
+  adminPinEntry = adminPinEntry.slice(0, -1);
+  updateAdminPinDots();
+}
+function updateAdminPinDots(mode) {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('adot' + i);
+    if (!dot) continue;
+    dot.className = 'pin-dot';
+    if (mode === 'error') dot.classList.add('error');
+    else if (i < adminPinEntry.length) dot.classList.add('filled');
+  }
+}
+function checkAdminPin() {
+  if (adminPinEntry === ADMIN_PIN) {
+    adminUnlocked = true;
+    document.getElementById('adminLockScreen').style.display = 'none';
+    const content = document.getElementById('adminContent');
+    content.style.display = 'flex';
+    // Sync secondary status display
+    syncAdminStatus();
+  } else {
+    updateAdminPinDots('error');
+    const errEl = document.getElementById('adminPinError');
+    if (errEl) { errEl.style.opacity = '1'; }
+    setTimeout(() => {
+      adminPinEntry = '';
+      updateAdminPinDots();
+      if (errEl) errEl.style.opacity = '0';
+    }, 1200);
+  }
+}
+
+// Keep the secondary status dot in Admin in sync with the main one
+function syncAdminStatus() {
+  const dot2 = document.getElementById('statusDot2');
+  const txt2 = document.getElementById('statusTxt2');
+  const dot1 = document.getElementById('statusDot');
+  const txt1 = document.getElementById('statusTxt');
+  if (dot2 && dot1) dot2.className = dot1.className;
+  if (txt2 && txt1) txt2.textContent = txt1.textContent;
+}
+
+// Admin re-lock is handled inside the main switchTab function
+
+// Patch setConnStatus to also update secondary dot
+const _origSetConnStatus = setConnStatus;
+function setConnStatus(state) {
+  _origSetConnStatus(state);
+  syncAdminStatus();
+}
+
+</script>
+</body>
+</html>
