@@ -62,7 +62,7 @@ body::before{
   top:-100px;left:50%;transform:translateX(-50%);
   animation:pulse 4s ease-in-out infinite;
 }
-@keyframes pulse{0%,100%{transform:translateX(-50%) scale(1);opacity:0.6}50%{transform:translateX(-50%) scale(1.15);opacity:1}}
+50%{transform:translateX(-50%) scale(1.15);opacity:1}}
 
 .start-logo{
   width:240px;height:auto;
@@ -126,7 +126,7 @@ body::before{
 .pin-error.show{opacity:1;}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .shake{animation:shake 0.4s ease;}
-@keyframes slideUp{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
+to{opacity:0;transform:translateY(-60px)}}
 .slide-away{animation:slideUp 0.4s ease forwards;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 0.4s ease forwards;}
@@ -138,8 +138,7 @@ body::before{
   display:flex;align-items:center;justify-content:space-between;
   padding:0 24px;height:56px;
   background:linear-gradient(180deg,rgba(12,12,22,0.98) 0%,rgba(10,10,18,0.95) 100%);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);-webkit-
   flex-shrink:0;position:relative;z-index:10;
   box-shadow:0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4);
 }
@@ -173,14 +172,12 @@ body::before{
   display:flex;align-items:center;gap:7px;
   padding:7px 16px;border-radius:24px;
   border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
+  background:rgba(255,255,255,0.05);-webkit-
+  
 }
 .status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-dim);transition:all 0.3s;}
-.status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green-glow);animation:livePulse 2s ease-in-out infinite;}
-@keyframes livePulse{
-  0%,100%{box-shadow:0 0 4px var(--green-glow), 0 0 0 0 rgba(16,214,122,0);}
+.status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green-glow);}
+
   50%{box-shadow:0 0 18px var(--green-glow), 0 0 0 5px rgba(16,214,122,0.1);}
 }
 .status-dot.error{background:var(--red);box-shadow:0 0 8px var(--red-glow);}
@@ -192,8 +189,7 @@ body::before{
 .tab-bar{
   display:flex;background:rgba(8,8,16,0.92);
   border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;
-  padding:0 16px;gap:2px;position:relative;z-index:9;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:0 16px;gap:2px;position:relative;z-index:9;-webkit-
 }
 .tab-btn{
   padding:14px 20px;font-size:11px;font-weight:800;cursor:pointer;
@@ -221,8 +217,8 @@ body::before{
 ════════════════════════════════ */
 .tab-content{flex:1;overflow:hidden;position:relative;}
 .tab-pane{display:none;height:100%;overflow-y:auto;overflow-x:hidden;}
-.tab-pane.active{display:flex;flex-direction:column;height:100%;animation:tabFadeIn 0.2s ease;}
-@keyframes tabFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.tab-pane.active{display:flex;flex-direction:column;height:100%;}
+to{opacity:1;transform:translateY(0)}}
 
 /* ════════════════════════════════
    TAB 1: CHANNELS
@@ -437,10 +433,9 @@ body::before{
   border-radius:22px;width:200px;min-width:200px;
   display:flex;flex-direction:column;align-items:center;
   padding:14px 10px 12px;gap:6px;
-  transition:all 0.2s;position:relative;overflow:hidden;
+  position:relative;overflow:hidden;
   flex:1;
-  box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.5);-webkit-
 }
 .fader-strip::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
@@ -713,7 +708,6 @@ input[type=range].eq-sl::-webkit-slider-thumb{
   position:fixed;inset:0;z-index:998;
   background:rgba(0,0,0,0.85);
   display:none;align-items:center;justify-content:center;
-  backdrop-filter:blur(8px);
 }
 #confirmOverlay.show{display:flex;}
 .confirm-modal{
@@ -755,8 +749,7 @@ input[type=range].eq-sl::-webkit-slider-thumb{
   opacity:0;transform:translateY(16px) scale(0.96);
   transition:all 0.28s cubic-bezier(0.34,1.4,0.64,1);
   pointer-events:none;
-  box-shadow:0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.5);-webkit-
   letter-spacing:0.3px;
 }
 .toast.show{opacity:1;transform:translateY(0) scale(1);}
@@ -1902,63 +1895,44 @@ function toggleFaderMute(chId, chNum, chType) {
 // ══════════════════════════════
 let vuRunning = false;
 function startVU() {
-  if (vuRunning) { stopVU(); } // clean restart if somehow called twice
+  if (vuRunning) return;
   vuRunning = true;
-  const ids = [...CHANNELS.map(c=>c.id)]; // master strip removed from fader view
-  // Randomize targets
+  const ids = [...CHANNELS.map(c=>c.id)];
   ids.forEach(id => vuTargets[id] = Math.random()*0.5+0.05);
 
-  function tick() {
-    if (!vuRunning) return;
-    try {
-      ids.forEach(id => {
-        // Random drift — pre-fade: ignores mute state, always shows input signal
-        if (Math.random() < 0.04) {
-          vuTargets[id] = Math.random()*0.6+0.05;
+  // 4fps interval — iPad Air 2 safe, no RAF overhead
+  vuAnimFrame = setInterval(() => {
+    if (!vuRunning) { clearInterval(vuAnimFrame); return; }
+    ids.forEach(id => {
+      if (Math.random() < 0.15) vuTargets[id] = Math.random()*0.65+0.05;
+      vuCurrent[id] += (vuTargets[id] - vuCurrent[id]) * 0.25;
+      const pct = Math.min(100, vuCurrent[id]*100);
+
+      const vufill = document.getElementById('vufill_'+id);
+      if (vufill) vufill.style.height = Math.round(pct)+'%';
+
+      const cardvu = document.getElementById('cardvu_'+id);
+      if (cardvu) {
+        const isMuted = document.getElementById('chcard_'+id)?.classList.contains('ch-muted');
+        cardvu.style.width = isMuted ? '0%' : Math.round(pct)+'%';
+      }
+
+      const dbLabel = document.getElementById('vudblabel_'+id);
+      if (dbLabel) {
+        if (pct < 1) { dbLabel.textContent = '—'; }
+        else {
+          const db = -60 + (pct/100)*66;
+          dbLabel.textContent = (db>0?'+':'')+db.toFixed(0)+'dB';
+          dbLabel.style.color = db > 0 ? 'var(--red)' : db > -6 ? 'var(--yellow)' : 'var(--green)';
         }
-        const prevPct = Math.min(100, vuCurrent[id]*100);
-        vuCurrent[id] += (vuTargets[id] - vuCurrent[id]) * 0.15;
-        const pct = Math.min(100, vuCurrent[id]*100);
-        if (Math.abs(pct - prevPct) < 0.8) return; // skip tiny changes — saves DOM writes
-        const vufill = document.getElementById('vufill_'+id);
-        if (vufill) vufill.style.height = pct.toFixed(1)+'%';
-        const cardvu = document.getElementById('cardvu_'+id);
-        if (cardvu) {
-          // Post-fade: zero out if channel is muted
-          const isMuted = document.getElementById('chcard_'+id)?.classList.contains('ch-muted');
-          cardvu.style.width = isMuted ? '0%' : pct.toFixed(1)+'%';
-        }
-        // dB readout: map 0-100% to approx -60dB to +6dB
-        const dbLabel = document.getElementById('vudblabel_'+id);
-        if (dbLabel) {
-          if (pct < 1) { dbLabel.textContent = '—'; dbLabel.style.color=''; }
-          else {
-            const db = -60 + (pct/100)*66;
-            dbLabel.textContent = (db>0?'+':'')+db.toFixed(0)+'dB';
-            dbLabel.style.color = db > 0 ? 'var(--red)' : db > -6 ? 'var(--yellow)' : 'var(--green)';
-          }
-        }
-        // Automixer update if active
-        try { if (amRunning && (id==='ch1'||id==='ch2')) updateAutomixerGains(); } catch(e){}
-      });
-    } catch(e) {
-      console.warn('VU tick error — restarting loop', e);
-    }
-    vuAnimFrame = requestAnimationFrame(() => setTimeout(tick, 80)); // ~12fps — iPad Air 2 friendly
-  }
-  tick();
-  // Watchdog: if the rAF loop somehow dies, restart it every 5s
-  if (!window._vuWatchdog) {
-    window._vuWatchdog = setInterval(() => {
-      if (!vuRunning) return;
-      if (!vuAnimFrame || !document.getElementById('vufill_ch1')) return;
-      // Check if loop is still alive by seeing if current values are changing
-    }, 5000);
-  }
+      }
+    });
+  }, 250); // 4fps
 }
 function stopVU() {
   vuRunning = false;
-  if (vuAnimFrame) cancelAnimationFrame(vuAnimFrame);
+  if (vuAnimFrame) clearInterval(vuAnimFrame);
+  vuAnimFrame = null;
 }
 
 // ══════════════════════════════
