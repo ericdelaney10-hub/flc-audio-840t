@@ -1217,7 +1217,7 @@ input, textarea {
           <div class="admin-section-body" style="gap:10px;">
             <div class="admin-action-row">
               <span class="admin-label">840T IP Address</span>
-              <input class="conn-input" type="text" id="ipInput" placeholder="e.g. 192.168.1.100" style="width:160px;" onkeydown="if(event.key==='Enter')openLiveWS()"/>
+              <input class="conn-input" type="text" id="ipInput" placeholder="PC-IP:8765 or DSP-IP" style="width:160px;" onkeydown="if(event.key==='Enter')openLiveWS()"/>
             </div>
             <div class="admin-action-row">
               <span class="admin-label">Device ID</span>
@@ -2368,11 +2368,16 @@ function buildTelnetMap() {
 }
 
 function getWSUrl() {
-  const ip       = document.getElementById('ipInput').value.trim();
+  const raw      = document.getElementById('ipInput').value.trim();
   const deviceId = document.getElementById('deviceIdInput').value || '30';
-  // Hardcoded Base44 backend — works regardless of hosting domain
+
+  // If user enters IP:PORT (e.g. 192.168.1.5:8765) → local PC proxy over plain ws://
+  // If user enters bare IP (e.g. 192.168.1.100)     → Base44 cloud backend over wss://
+  if (/:\d+$/.test(raw)) {
+    return `ws://${raw}`;
+  }
   const base = 'wss://superagent-e6dd1744.base44.app';
-  return `${base}/functions/clearVoiceLive?ip=${encodeURIComponent(ip)}&deviceId=${encodeURIComponent(deviceId)}`;
+  return `${base}/functions/clearVoiceLive?ip=${encodeURIComponent(raw)}&deviceId=${encodeURIComponent(deviceId)}`;
 }
 
 function setConnStatus(state) {
