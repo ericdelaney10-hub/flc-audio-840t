@@ -495,16 +495,17 @@ to{opacity:1;transform:translateY(0)}}
   box-shadow:none;
 }
 .vu-fill{
-  width:100%;height:0%;
+  width:100%;height:100%;
   background:linear-gradient(to top,
     #05ff8a 0%,
     #10d67a 52%,
     #ffe040 72%,
     #ff9500 86%,
     #ff2244 100%);
-  transition:height 0.05s ease-out;
   border-radius:0 0 4px 4px;
-  filter:brightness(1.1);
+  transform:scaleY(0);
+  transform-origin:bottom center;
+  will-change:transform;
 }
 .vu-segments{
   position:absolute;inset:0;
@@ -995,11 +996,12 @@ input[type=range].admin-sl::-webkit-slider-thumb{
   position:relative;
 }
 .ch-vu-bar{
-  height:100%;width:0%;
+  height:100%;width:100%;
   border-radius:3px;
   background:linear-gradient(90deg,var(--green) 0%,#7fff6a 65%,var(--gold) 82%,var(--red) 100%);
-  background-size:200% 100%;
-  transition:width 0.08s linear;
+  transform:scaleX(0);
+  transform-origin:left center;
+  will-change:transform;
 }
 
 /* ══ iPAD TOUCH LOCKDOWN ══════════════════════════════════════ */
@@ -1937,8 +1939,8 @@ function startVU() {
         const d = domCache[id];
         const activePct = isMuted ? 0 : pct;
 
-        if (d.vufill)  d.vufill.style.height  = activePct + '%';
-        if (d.cardvu)  d.cardvu.style.width    = activePct + '%';
+        if (d.vufill)  d.vufill.style.transform  = 'scaleY(' + (activePct / 100).toFixed(3) + ')';
+        if (d.cardvu)  d.cardvu.style.transform  = 'scaleX(' + (activePct / 100).toFixed(3) + ')';
 
         if (d.dblabel) {
           if (activePct < 2) {
@@ -1951,7 +1953,7 @@ function startVU() {
         }
       });
     });
-  }, 250); // 4fps
+  }, 333); // 3fps — A8 safe
 }
 function stopVU() {
   vuRunning = false;
