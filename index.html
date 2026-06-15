@@ -2373,16 +2373,24 @@ function buildTelnetMap() {
 }
 
 function getWSUrl() {
-  const raw      = document.getElementById('ipInput').value.trim();
-  const deviceId = document.getElementById('deviceIdInput').value || '30';
+  // Pull from header input first, fall back to admin input
+  const raw = (document.getElementById('ipInputHeader')?.value?.trim() ||
+               document.getElementById('ipInput')?.value?.trim() || '').trim();
 
-  // If user enters IP:PORT (e.g. 192.168.1.5:8765) → local PC proxy over plain ws://
-  // If user enters bare IP (e.g. 192.168.1.100)     → Base44 cloud backend over wss://
+  // cloudflare tunnel: https://xxxx.trycloudflare.com → wss://
+  if (/^https:\/\//i.test(raw)) {
+    return raw.replace(/^https:/i, 'wss:');
+  }
+  // already wss:// or ws://
+  if (/^wss?:\/\//i.test(raw)) {
+    return raw;
+  }
+  // IP:PORT → plain ws:// (only works on http:// pages, not GitHub Pages)
   if (/:\d+$/.test(raw)) {
     return `ws://${raw}`;
   }
-  const base = 'wss://superagent-e6dd1744.base44.app';
-  return `${base}/functions/clearVoiceLive?ip=${encodeURIComponent(raw)}&deviceId=${encodeURIComponent(deviceId)}`;
+  // bare hostname/IP → wss://
+  return `wss://${raw}`;
 }
 
 function setConnStatus(state) {
@@ -2398,8 +2406,15 @@ function setConnStatus(state) {
 }
 
 function openLiveWS() {
-  const ip = document.getElementById('ipInput')?.value?.trim();
-  if (!ip) return;
+  // Sync whichever input has a value
+  const hdr = document.getElementById('ipInputHeader');
+  const adm = document.getElementById('ipInput');
+  const ip  = (hdr?.value?.trim() || adm?.value?.trim() || '');
+  if (hdr && adm) {
+    if (hdr.value.trim()) adm.value = hdr.value.trim();
+    else if (adm.value.trim()) hdr.value = adm.value.trim();
+  }
+  if (!ip) { showToast('Enter your tunnel URL or IP first', ''); return; }
 
   if (liveWS && liveWS.readyState <= 1) {
     liveWS.close();
