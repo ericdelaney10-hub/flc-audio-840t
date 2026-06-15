@@ -1446,7 +1446,7 @@ function checkPin() {
       const app = document.getElementById('mainApp');
       app.style.display = 'flex';
       app.classList.add('fade-in');
-      // startVU() disabled — iPad Air 2 perf mode
+      startVU();
       // Restore saved IP and auto-connect
       const savedIP = localStorage.getItem(LS_IP) || '';
       const ipEl = document.getElementById('ipInput');
@@ -1458,7 +1458,7 @@ function checkPin() {
         sendCommand({ action:'bulkSet', params:{ commands:muteStart } });
         setTimeout(applyPSE, 800);
         showToast('System unlocked — connecting to 840T…', 'success');
-        // VU meters disabled on iPad Air 2 for performance
+        startVU();
       } else {
         showToast('System unlocked! Set device IP in Admin to connect.', '');
         setTimeout(applyPSE, 800);
@@ -1900,39 +1900,58 @@ function startVU() {
   if (vuRunning) return;
   vuRunning = true;
   const ids = [...CHANNELS.map(c=>c.id)];
-  ids.forEach(id => vuTargets[id] = Math.random()*0.5+0.05);
+  ids.forEach(id => { vuTargets[id] = 0; vuCurrent[id] = 0; });
 
-  // 4fps interval — iPad Air 2 safe, no RAF overhead
+  // Cache DOM refs once — avoid getElementById on every tick
+  const domCache = {};
+  ids.forEach(id => {
+    domCache[id] = {
+      vufill:  document.getElementById('vufill_'+id),
+      cardvu:  document.getElementById('cardvu_'+id),
+      dblabel: document.getElementById('vudblabel_'+id),
+      card:    document.getElementById('chcard_'+id)
+    };
+  });
+
+  // 4fps — smooth enough, light enough for A8
   vuAnimFrame = setInterval(() => {
     if (!vuRunning) { clearInterval(vuAnimFrame); return; }
-    // Compute values first (no DOM reads during write phase)
+
+    // Only run on visible tab — skip if channels/faders not showing
+    const activePane = document.querySelector('.tab-pane.active');
+    const activeId = activePane ? activePane.id : '';
+    if (activeId !== 'tab-channels' && activeId !== 'tab-faders') return;
+
     const updates = [];
     ids.forEach(id => {
-      if (Math.random() < 0.15) vuTargets[id] = Math.random()*0.65+0.05;
-      vuCurrent[id] += (vuTargets[id] - vuCurrent[id]) * 0.25;
-      const pct = Math.min(100, vuCurrent[id]*100);
-      const isMuted = document.getElementById('chcard_'+id)?.classList.contains('ch-muted');
-      const db = pct < 1 ? null : -60 + (pct/100)*66;
-      updates.push({id, pct, isMuted, db});
+      if (Math.random() < 0.12) vuTargets[id] = Math.random() * 0.7 + 0.05;
+      vuCurrent[id] += (vuTargets[id] - vuCurrent[id]) * 0.22;
+      const pct = Math.min(100, vuCurrent[id] * 100);
+      const isMuted = domCache[id].card?.classList.contains('ch-muted');
+      updates.push({ id, pct: Math.round(pct), isMuted });
     });
-    // Batch all DOM writes in one rAF to avoid layout thrash
+
+    // Single rAF for all DOM writes
     requestAnimationFrame(() => {
-      updates.forEach(({id, pct, isMuted, db}) => {
-        const vufill = document.getElementById('vufill_'+id);
-        if (vufill) vufill.style.height = Math.round(pct)+'%';
-        const cardvu = document.getElementById('cardvu_'+id);
-        if (cardvu) cardvu.style.width = isMuted ? '0%' : Math.round(pct)+'%';
-        const dbLabel = document.getElementById('vudblabel_'+id);
-        if (dbLabel) {
-          if (!db) { dbLabel.textContent = '—'; }
-          else {
-            dbLabel.textContent = (db>0?'+':'')+db.toFixed(0)+'dB';
-            dbLabel.style.color = db > 0 ? 'var(--red)' : db > -6 ? 'var(--yellow)' : 'var(--green)';
+      updates.forEach(({ id, pct, isMuted }) => {
+        const d = domCache[id];
+        const activePct = isMuted ? 0 : pct;
+
+        if (d.vufill)  d.vufill.style.height  = activePct + '%';
+        if (d.cardvu)  d.cardvu.style.width    = activePct + '%';
+
+        if (d.dblabel) {
+          if (activePct < 2) {
+            d.dblabel.textContent = '—';
+          } else {
+            const db = -60 + (activePct / 100) * 66;
+            d.dblabel.textContent = (db > 0 ? '+' : '') + db.toFixed(0) + 'dB';
+            d.dblabel.style.color = db > 0 ? 'var(--red)' : db > -6 ? 'var(--yellow)' : 'var(--green)';
           }
         }
       });
     });
-  }, 250); // 4fps — iPad Air 2 optimised
+  }, 250); // 4fps
 }
 function stopVU() {
   vuRunning = false;
