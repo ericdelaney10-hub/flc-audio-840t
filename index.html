@@ -1097,7 +1097,21 @@ input, textarea {
         <div class="topbar-sub">FLC Audio · ClearVoice 840T</div>
       </div>
     </div>
-    <div class="topbar-right">
+    <div class="topbar-right" style="display:flex;align-items:center;gap:8px;">
+      <input id="ipInputHeader" type="text" inputmode="url" autocorrect="off" autocapitalize="none"
+        placeholder="paste tunnel URL"
+        style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);
+               color:#fff;border-radius:10px;padding:6px 10px;font-size:11px;width:190px;
+               outline:none;-webkit-appearance:none;font-family:monospace;"
+        onkeydown="if(event.key==='Enter')connectFromHeader()"
+      />
+      <button onclick="connectFromHeader()"
+        style="background:rgba(79,142,247,0.3);border:1.5px solid rgba(79,142,247,0.6);
+               color:#fff;border-radius:10px;padding:6px 16px;font-size:12px;font-weight:800;
+               letter-spacing:1px;-webkit-tap-highlight-color:transparent;cursor:pointer;
+               white-space:nowrap;">
+        CONNECT
+      </button>
       <div class="status-pill">
         <div class="status-dot" id="statusDot"></div>
         <span class="status-txt" id="statusTxt">Disconnected</span>
